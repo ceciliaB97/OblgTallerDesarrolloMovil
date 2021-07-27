@@ -1,0 +1,74 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/functions.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Archivos de Onsen UI - 2 css y 1 js -->
+    <link rel="stylesheet" href="OnsenUI-dist-2.11.2/css/onsenui.min.css">
+    <link rel="stylesheet" href="OnsenUI-dist-2.11.2/css/old-onsen-css-components.min.css">
+    <script src="OnsenUI-dist-2.11.2/js/onsenui.min.js"></script>
+</head>
+
+<body>
+    <ons-navigator page="temp_login" id="nav"></ons-navigator>
+    <template id="temp_login">
+        <ons-page id="pag_login">
+            <section>
+                <h1>Login</h1>
+                <p><input type="text" id="login_usuario" placeholder="Usuario" class="text-input text-input--material">
+                </p>
+                <p><input type="password" id="login_password" placeholder="Contrase&ntilde;a"
+                        class="text-input text-input--material"></p>
+                <ons-button id="login_btn">Login</ons-button>
+                <ons-button id="login_register_btn" modifier="outline">Register</ons-button>
+            </section>
+        </ons-page>
+    </template>
+
+    <template id="temp_registro">
+        <ons-page id="pag_registro">
+            <section>
+                <h1>Registro de usuario</h1>
+                <p>Nombre</p>
+                <p><input type="text" id="registro_nombre" placeholder="Usuario"
+                        class="text-input text-input--material">
+                </p>
+                <p>Apellido</p>
+                <p><input type="text" id="registro_apellido" placeholder="Usuario"
+                        class="text-input text-input--material">
+                </p>
+                <p>Email</p>
+                <p><input type="text" id="registro_email" placeholder="Usuario" class="text-input text-input--material">
+                </p>
+                <ons-select id="registro_genero" class="">
+                    <option value="">Seleccione una opcion</option>
+                    <option value="F">Femenino</option>
+                    <option value="M">Masculino</option>
+                </ons-select>
+                <p>Contrase&ntilde;a</p>
+                <p><input type="password" id="registro_password" placeholder="Contrase&ntilde;a"
+                        class="text-input text-input--material"></p>
+                <p>Re contrase&ntilde;a</p>
+                <p><input type="password" id="registro_password_repeat" placeholder="Contrase&ntilde;a"
+                        class="text-input text-input--material"></p>
+                <ons-button id="registrarse_btn">Registrarse</ons-button>
+            </section>
+        </ons-page>
+    </template>
+
+    <template id="temp_locales">
+        <ons-page id="pag_locales">
+            <section>
+                <h1>Locales</h1>
+            </section>
+        </ons-page>
+    </template>
+
+</body>
+
+</html>
