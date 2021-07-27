@@ -126,4 +126,8 @@ $(document).ready(function () {
         nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
     });
 
+    // MAIN MENU
+    $(document).on("click","#btn_pantalla_principal_productos", function(){
+        // Plantilla para side menu
+    });
 });
