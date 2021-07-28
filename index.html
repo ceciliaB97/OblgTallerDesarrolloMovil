@@ -33,6 +33,7 @@
     <template id="temp_registro">
         <ons-page id="pag_registro">
             <section>
+                <!-- Registro de usuario: nombre, apellido, email, password, password 2 -->
                 <h1>Registro de usuario</h1>
                 <p>Nombre</p>
                 <p><input type="text" id="registro_nombre" placeholder="Usuario"
@@ -45,11 +46,9 @@
                 <p>Email</p>
                 <p><input type="text" id="registro_email" placeholder="Usuario" class="text-input text-input--material">
                 </p>
-                <ons-select id="registro_genero" class="">
-                    <option value="">Seleccione una opcion</option>
-                    <option value="F">Femenino</option>
-                    <option value="M">Masculino</option>
-                </ons-select>
+                <p>Direcci&oacute;n</p>
+                <p><input type="text" id="registro_direccion" placeholder="Direcci&oacute;n" class="text-input text-input--material">
+                </p>
                 <p>Contrase&ntilde;a</p>
                 <p><input type="password" id="registro_password" placeholder="Contrase&ntilde;a"
                         class="text-input text-input--material"></p>

@@ -2,6 +2,7 @@ $(document).ready(function () {
     //DOM ready => se puede manipular elementos html desde JS
     //alert('ready');
 
+    //#region login
     $(document).on("click", "#login_btn", function () {
         let mail = $("#login_usuario").val();
         let pass = $("#login_password").val();
@@ -48,12 +49,14 @@ $(document).ready(function () {
             ons.notification.toast(error, { timeout: 2000 });
         }
     });
+    //#endregion login
 
+    //#region registrarse
     $(document).on("click", "#registrarse_btn", function () {
         let nombre = $("#registro_nombre").val();
         let apellido = $("#registro_apellido").val();
         let mail = $("#registro_email").val();
-        let genero = $("#registro_genero").val();
+        let direccion = $("#registro_direccion").val();
         let pass1 = $("#registro_password").val();
         let pass2 = $("#registro_password_repeat").val();
 
@@ -71,7 +74,7 @@ $(document).ready(function () {
             if (!mail) {
                 throw "Email requerida";
             }
-            if (!genero) {
+            if (!direccion) {
                 throw "Genero requerida";
             }
             if (!pass1) {
@@ -85,12 +88,12 @@ $(document).ready(function () {
             }
 
             let datos = {
-                "password": pass1,
-                "email": mail,
                 "nombre": nombre,
                 "apellido": apellido,
-                "sexo": genero
-            };
+                "email": mail,
+                "direccion": direccion,
+                "password": pass1
+              };
             //CONVERTIR EL OBJETO 'DATOS' A TEXTO PLANO, PARA QUE LO ACEPTE LA API
             //puede ser NECESARIO PARA LA API o NO
             datos = JSON.stringify(datos);
@@ -104,7 +107,7 @@ $(document).ready(function () {
                 data: datos,
                 success: function(respuesta) {
                     let nav = document.getElementById("nav");
-                    nav.pushPage("temp_locales");
+                    nav.pushPage("temp_login");
                     nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
                     ons.notification.toast("Registrado corretamente", { timeout: 2000 });
                 },
@@ -117,13 +120,15 @@ $(document).ready(function () {
             ons.notification.toast(error, { timeout: 2000 });
         }
     });
+    //#endregion registrarse
 
 
-
+    //#region redirigir a registro
     $(document).on("click", "#login_register_btn", function () {
         let nav = document.getElementById("nav");
         nav.pushPage("temp_registro");
         nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
     });
+    //#endregion redirigir a registro
 
 });
