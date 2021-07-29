@@ -2,6 +2,12 @@ $(document).ready(function() {
     //DOM ready => se puede manipular elementos html desde JS
     //alert('ready');
 
+    $(document).on("click", ".pantalla_productos_listado_class", function(){
+        let id_local = $(this).data("id");
+        let nav = document.getElementById("nav");
+        nav.pushPage("temp_infoLocal", {data:{id:id_local}});
+    });
+
     //#region login
     $(document).on("click", "#login_btn", function() {
         let mail = $("#login_usuario").val();
