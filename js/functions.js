@@ -1,15 +1,15 @@
-$(document).ready(function() {
+$(document).ready(function () {
     //DOM ready => se puede manipular elementos html desde JS
     //alert('ready');
 
-    $(document).on("click", ".pantalla_productos_listado_class", function(){
+    $(document).on("click", ".pantalla_productos_listado_class", function () {
         let id_local = $(this).data("id");
         let nav = document.getElementById("nav");
-        nav.pushPage("temp_infoLocal", {data:{id:id_local}});
+        nav.pushPage("temp_infoLocal", { data: { id: id_local } });
     });
 
     //#region login
-    $(document).on("click", "#login_btn", function() {
+    $(document).on("click", "#login_btn", function () {
         let mail = $("#login_usuario").val();
         let pass = $("#login_password").val();
 
@@ -33,6 +33,12 @@ $(document).ready(function() {
             //puede ser NECESARIO PARA LA API o NO
             datos = JSON.stringify(datos);
 
+            //ajax setup 
+            $.ajaxSetup({
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
             //objeto JS
             let url = `https://ort-tallermoviles.herokuapp.com/api/usuarios/session`;
             $.ajax({
@@ -40,7 +46,7 @@ $(document).ready(function() {
                 type: "POST",
                 dataType: "json",
                 data: datos,
-                success: function(respuesta) {
+                success: function (respuesta) {
                     let nav = document.getElementById("nav");
                     nav.pushPage("temp_locales");
                     nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
@@ -58,7 +64,7 @@ $(document).ready(function() {
     //#endregion login
 
     //#region registrarse
-    $(document).on("click", "#registrarse_btn", function() {
+    $(document).on("click", "#registrarse_btn", function () {
         let nombre = $("#registro_nombre").val();
         let apellido = $("#registro_apellido").val();
         let mail = $("#registro_email").val();
@@ -99,12 +105,18 @@ $(document).ready(function() {
                 "email": "gab1.arpe@gmail.com",
                 "direccion": "Calle A 1234",
                 "password": "aa123456"
-              }; 
-        
+            };
+
             //CONVERTIR EL OBJETO 'DATOS' A TEXTO PLANO, PARA QUE LO ACEPTE LA API
             //puede ser NECESARIO PARA LA API o NO
             datos = JSON.stringify(datos);
-
+            
+            //ajax setup 
+            $.ajaxSetup({
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
             //objeto JS
             let url = `https://ort-tallermoviles.herokuapp.com/api/usuarios`;
             $.ajax({
@@ -112,7 +124,7 @@ $(document).ready(function() {
                 type: "POST",
                 dataType: "json",
                 data: datos,
-                success: function(respuesta) {
+                success: function (respuesta) {
                     let nav = document.getElementById("nav");
                     nav.pushPage("temp_login");
                     nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
@@ -131,7 +143,7 @@ $(document).ready(function() {
 
 
     //#region redirigir a registro
-    $(document).on("click", "#login_register_btn", function() {
+    $(document).on("click", "#login_register_btn", function () {
         let nav = document.getElementById("nav");
         nav.pushPage("temp_registro");
         nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
