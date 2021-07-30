@@ -2,6 +2,13 @@ $(document).ready(function () {
     //DOM ready => se puede manipular elementos html desde JS
     //alert('ready');
 
+    $(document).on("click", ".pantalla_productos_listado_class", function () {
+        let id_local = $(this).data("id");
+        let nav = document.getElementById("nav");
+        nav.pushPage("temp_infoLocal", { data: { id: id_local } });
+    });
+
+    //#region login
     $(document).on("click", "#login_btn", function () {
         let mail = $("#login_usuario").val();
         let pass = $("#login_password").val();
@@ -26,21 +33,27 @@ $(document).ready(function () {
             //puede ser NECESARIO PARA LA API o NO
             datos = JSON.stringify(datos);
 
+            //ajax setup 
+            $.ajaxSetup({
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
             //objeto JS
-            let url = `http://api.marcelocaiafa.com/login`;
+            let url = `https://ort-tallermoviles.herokuapp.com/api/usuarios/session`;
             $.ajax({
                 url: url,
                 type: "POST",
                 dataType: "json",
                 data: datos,
-                success: function(respuesta) {
+                success: function (respuesta) {
                     let nav = document.getElementById("nav");
                     nav.pushPage("temp_locales");
                     nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
                     //ons.notification.toast("Logueado corretamente", { timeout: 2000 });
                 },
                 error: function (xml, error, status) {
-                    ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+                    ons.notification.toast(xml.responseJSON.error, { timeout: 4000 });
                 }
             });
 
@@ -48,12 +61,14 @@ $(document).ready(function () {
             ons.notification.toast(error, { timeout: 2000 });
         }
     });
+    //#endregion login
 
+    //#region registrarse
     $(document).on("click", "#registrarse_btn", function () {
         let nombre = $("#registro_nombre").val();
         let apellido = $("#registro_apellido").val();
         let mail = $("#registro_email").val();
-        let genero = $("#registro_genero").val();
+        let direccion = $("#registro_direccion").val();
         let pass1 = $("#registro_password").val();
         let pass2 = $("#registro_password_repeat").val();
 
@@ -71,8 +86,11 @@ $(document).ready(function () {
             if (!mail) {
                 throw "Email requerida";
             }
-            if (!genero) {
+            if (!direccion) {
                 throw "Genero requerida";
+            }
+            if (pass1.length < 8) {
+                throw "Contrase&ntilde;a debe ser de 8 o mas caracteres";
             }
             if (!pass1) {
                 throw "Contrase&ntilde;a requerida";
@@ -85,31 +103,38 @@ $(document).ready(function () {
             }
 
             let datos = {
-                "password": pass1,
-                "email": mail,
                 "nombre": nombre,
                 "apellido": apellido,
-                "sexo": genero
+                "email": mail,
+                "direccion": direccion,
+                "password": pass1
             };
+
             //CONVERTIR EL OBJETO 'DATOS' A TEXTO PLANO, PARA QUE LO ACEPTE LA API
             //puede ser NECESARIO PARA LA API o NO
             datos = JSON.stringify(datos);
-
+            
+            //ajax setup 
+            $.ajaxSetup({
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
             //objeto JS
-            let url = `http://api.marcelocaiafa.com/usuario`;
+            let url = `https://ort-tallermoviles.herokuapp.com/api/usuarios`;
             $.ajax({
                 url: url,
                 type: "POST",
                 dataType: "json",
                 data: datos,
-                success: function(respuesta) {
+                success: function (respuesta) {
                     let nav = document.getElementById("nav");
-                    nav.pushPage("temp_locales");
+                    nav.pushPage("temp_login");
                     nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
                     ons.notification.toast("Registrado corretamente", { timeout: 2000 });
                 },
                 error: function (xml, error, status) {
-                    ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+                    ons.notification.toast(xml.responseJSON.error, { timeout: 4000 });
                 }
             });
 
@@ -117,14 +142,16 @@ $(document).ready(function () {
             ons.notification.toast(error, { timeout: 2000 });
         }
     });
+    //#endregion registrarse
 
 
-
+    //#region redirigir a registro
     $(document).on("click", "#login_register_btn", function () {
         let nav = document.getElementById("nav");
         nav.pushPage("temp_registro");
         nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
     });
+    //#endregion redirigir a registro
 
     // MAIN MENU
     $(document).on("click","#btn_pantalla_principal_productos", function(){
