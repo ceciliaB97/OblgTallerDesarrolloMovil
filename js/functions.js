@@ -89,6 +89,9 @@ $(document).ready(function () {
             if (!direccion) {
                 throw "Genero requerida";
             }
+            if (pass1.length < 8) {
+                throw "Contrase&ntilde;a debe ser de 8 o mas caracteres";
+            }
             if (!pass1) {
                 throw "Contrase&ntilde;a requerida";
             }
@@ -100,11 +103,11 @@ $(document).ready(function () {
             }
 
             let datos = {
-                "nombre": "Gabriel",
-                "apellido": "Arce",
-                "email": "gab1.arpe@gmail.com",
-                "direccion": "Calle A 1234",
-                "password": "aa123456"
+                "nombre": nombre,
+                "apellido": apellido,
+                "email": mail,
+                "direccion": direccion,
+                "password": pass1
             };
 
             //CONVERTIR EL OBJETO 'DATOS' A TEXTO PLANO, PARA QUE LO ACEPTE LA API
