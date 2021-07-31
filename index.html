@@ -106,15 +106,16 @@
                             let item = "";
                             let url = "";
                             $.each(respuesta.descripcion, function (pos, producto) {
-                                url = `http://images.marcelocaiafa.com/producto/${producto.imagen}`;
+                                url = `http://images.marcelocaiafa.com/producto/${producto.foto}`;
                                 item = `<ons-list-item modifier="chevron longdivider" tappable tap-background-color="#A6FF33" data-id="${producto.id}" class="listado_productos">
                                         <div class="left">
                                             <img class="list-item__thumbnail" src="${url}">
                                         </div>
                                         <div class="center">
-                                            <span class="list-item__title">${producto.nombre}</span><span class="list-item__subtitle">${producto.telefono}</span>
+                                            <span class="list-item__title">${producto.nombre}</span><span class="list-item__subtitle">${producto.precio}</span>
+                                            <span class="list-item">${producto.etiqueta}></span><span class="list-item">${producto.estado}</span>
                                         </div>
-                                        </ons-list-item>`;
+                                        </ons-list-item>`; // Falta agregar ícono de FAVORITO a los productos
                                 $("#l_lista_productos").append(item);
                             });
                         },
