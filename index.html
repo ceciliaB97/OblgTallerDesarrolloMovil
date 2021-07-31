@@ -47,7 +47,8 @@
                 <p><input type="text" id="registro_email" placeholder="Usuario" class="text-input text-input--material">
                 </p>
                 <p>Direcci&oacute;n</p>
-                <p><input type="text" id="registro_direccion" placeholder="Direcci&oacute;n" class="text-input text-input--material">
+                <p><input type="text" id="registro_direccion" placeholder="Direcci&oacute;n"
+                        class="text-input text-input--material">
                 </p>
                 <p>Contrase&ntilde;a</p>
                 <p><input type="password" id="registro_password" placeholder="Contrase&ntilde;a"
@@ -70,47 +71,48 @@
         </ons-page>
     </template>
 
-    <template id="t_pantalla_productos">
-        <ons-page id="p_pantalla_productos">
+    <template id="temp_pantalla_productos">
+        <ons-page id="pag_pantalla_productos">
             <script>
-                ons.getScriptPage().onInit = function(){
+                ons.getScriptPage().onInit = function() {
                     //Se ejecuta una unica vez => Cuando se carga la pagina.
-                    
+
                 }
-                ons.getScriptPage().onShow = function(){
+                ons.getScriptPage().onShow = function() {
                     //Se ejecuta siempre = > Cuando se muestra se la pagina.
+
+                    //ESTO ES LO QUE TENEMOS QUE REVISAR - 
                     let usuario = sessionStorage.getItem("usuario");
                     usuario = JSON.parse(usuario);
-                    $("#l_lista_productos").empty();
                     $("#saludo").html(`Hola <strong>${usuario.email}</strong>`);
+                    $("#l_lista_productos").empty();
+                    //  $("#saludo").html(`Hola <strong>${usuario.email}</strong>`);
                     // https://onsen.io/v2/api/css.html#list-category
-                    // http://images.marcelocaiafa.com/local/1.jpg
-                    $("#spn_txt_loading").text("Cargando productos...");
+                    // http://images.marcelocaiafa.com/producto/1.jpg
+                    $("#spn_txtemp_loading").text("Cargando productos...");
                     $("#cargando").show();
+
+                    //ajax setup 
+                    $.ajaxSetup({
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    });
                     $.ajax({
-                        url:"http://api.marcelocaiafa.com/local",
-                        type:"GET",
-                        dataType:"json",
-                        success: function(respuesta){
+                        url: "http://api.marcelocaiafa.com/producto",
+                        type: "GET",
+                        dataType: "json",
+                        success: function (respuesta) {
                             let item = "";
-                            let url  = "";
-                            $.each(respuesta.descripcion, function(pos, local){
-                                url = `http://images.marcelocaiafa.com/local/${local.imagen}`;
-                                // item = `<li class="list-item">
-                                //     <div class="list-item__left">
-                                //     <img class="list-item__thumbnail" src="${url}" alt="Cute kitten">
-                                //     </div>
-                                //     <div class="list-item__center">
-                                //     <div class="list-item__title">${local.nombre}</div>
-                                //     <div class="list-item__subtitle">${local.telefono}</div>
-                                //     </div>
-                                // </li>`;
-                                item = `<ons-list-item modifier="chevron longdivider" tappable tap-background-color="#A6FF33" data-id="${local.id}" class="listado_productos">
+                            let url = "";
+                            $.each(respuesta.descripcion, function (pos, producto) {
+                                url = `http://images.marcelocaiafa.com/producto/${producto.imagen}`;
+                                item = `<ons-list-item modifier="chevron longdivider" tappable tap-background-color="#A6FF33" data-id="${producto.id}" class="listado_productos">
                                         <div class="left">
                                             <img class="list-item__thumbnail" src="${url}">
                                         </div>
                                         <div class="center">
-                                            <span class="list-item__title">${local.nombre}</span><span class="list-item__subtitle">${local.telefono}</span>
+                                            <span class="list-item__title">${producto.nombre}</span><span class="list-item__subtitle">${producto.telefono}</span>
                                         </div>
                                         </ons-list-item>`;
                                 $("#l_lista_productos").append(item);
@@ -119,11 +121,11 @@
                         error: function (xml, err, status) {
                             ons.notification.toast(xml.responseJSON.descripcion, { "timeout": 3000 });
                         },
-                        complete:function(){
+                        complete: function() {
                             $("#cargando").hide();
                         }
                     });
-                }   
+                }
             </script>
             <section>
                 <h1>Listado de productos</h1>
@@ -133,7 +135,7 @@
             </section>
         </ons-page>
     </template>
-    
+
     <template id="temp_detalle_productos">
         <ons-page id="pag_detalle_productos">
             <!--ACÁ VAN LOS PRODUCTOS-->
@@ -146,7 +148,7 @@
                     usuario = JSON.parse(usuario);
                     $("#saludo").html(`Hola <strong>${usuario.nombre}</strong>`);
 
-                    $("#spn_txt_cargando").text('Cargando productos...');
+                    $("#spn_txtemp_cargando").text('Cargando productos...');
                     $("#cargando").show();
 
                     $.ajax({
@@ -154,12 +156,12 @@
                         type: "GET",
                         dataType: "json",
                         success: function (respuesta) {
-                            let item_local = "";
+                            let item_producto = "";
                             $.each(respuesta.descripcion, function (pos, producto_item) {
                                 item = `
                                 <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="detalle_productos_listado_class" data-id="${producto_item._id}" data-codigo="${producto_item.codigo}">
                                     <div class="list-item__left">
-                                    <img class="list-item__thumbnail" src="https://ort-tallermoviles.herokuapp.com/api/productos/${producto_item.urlImagen}" alt="Local ${producto_item.nombre}">
+                                    <img class="list-item__thumbnail" src="https://ort-tallermoviles.herokuapp.com/api/productos/${producto_item.urlImagen}" alt="producto ${producto_item.nombre}">
                                     </div>
 
                                     <div class="list-item__center">
@@ -193,8 +195,6 @@
             </section>
         </ons-page>
     </template>
-
-    
 
 </body>
 

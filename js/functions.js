@@ -47,8 +47,9 @@ $(document).ready(function () {
                 dataType: "json",
                 data: datos,
                 success: function (respuesta) {
+                    sessionStorage.setItem("usuario", JSON.stringify(respuesta.data));
                     let nav = document.getElementById("nav");
-                    nav.pushPage("temp_productos");
+                    nav.pushPage("temp_pantalla_productos");
                     nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
                     //ons.notification.toast("Logueado corretamente", { timeout: 2000 });
                 },
