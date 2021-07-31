@@ -15,6 +15,15 @@
 </head>
 
 <body>
+    
+    <ons-modal direction="up" id="pantalla_cargando">
+        <div style="text-align: center">
+            <p>
+                <ons-icon icon="md-spinner" size="28px" spin></ons-icon><span id="span_txt_cargando"></span>
+            </p>
+        </div>
+    </ons-modal>
+    
     <ons-navigator page="temp_login" id="nav"></ons-navigator>
     <template id="temp_login">
         <ons-page id="pag_login">
@@ -74,11 +83,11 @@
     <template id="temp_pantalla_productos">
         <ons-page id="pag_pantalla_productos">
             <script>
-                ons.getScriptPage().onInit = function() {
+                ons.getScriptPage().onInit = function () {
                     //Se ejecuta una unica vez => Cuando se carga la pagina.
 
                 }
-                ons.getScriptPage().onShow = function() {
+                ons.getScriptPage().onShow = function () {
                     //Se ejecuta siempre = > Cuando se muestra se la pagina.
 
                     //ESTO ES LO QUE TENEMOS QUE REVISAR - 
@@ -89,8 +98,8 @@
                     //  $("#saludo").html(`Hola <strong>${usuario.email}</strong>`);
                     // https://onsen.io/v2/api/css.html#list-category
                     // http://images.marcelocaiafa.com/producto/1.jpg
-                    $("#spn_txtemp_loading").text("Cargando productos...");
-                    $("#cargando").show();
+                    $("#span_txt_cargando").text("Cargando productos...");
+                    $("#pantalla_cargando").show();
 
                     //ajax setup 
                     $.ajaxSetup({
@@ -122,7 +131,7 @@
                         error: function (xml, err, status) {
                             ons.notification.toast(xml.responseJSON.descripcion, { "timeout": 3000 });
                         },
-                        complete: function() {
+                        complete: function () {
                             $("#cargando").hide();
                         }
                     });
@@ -144,7 +153,7 @@
             <p><input type="text" class="text-input text-input--material" placeholder="Filtrar productos..."></p>
 
             <script>
-                ons.getScriptPage().onShow = function() {
+                ons.getScriptPage().onShow = function () {
                     let usuario = sessionStorage.getItem("usuario");
                     usuario = JSON.parse(usuario);
                     $("#saludo").html(`Hola <strong>${usuario.email}</strong>`);
@@ -178,12 +187,12 @@
                         error: function (xml, error, status) {
                             ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
                         },
-                        complete: function() {
+                        complete: function () {
                             $("#cargando").hide();
                         }
                     });
 
-                    $(document).on("click", "#listado_productos_listado_class", function() {
+                    $(document).on("click", "#listado_productos_listado_class", function () {
                         alert($(this).data("id"));
                     });
                 }
@@ -200,7 +209,7 @@
     <template id="temp_info_producto">
         <ons-page id="pag_info_producto">
             <script>
-                ons.getScriptPage().onShow = function() {
+                ons.getScriptPage().onShow = function () {
                     let id_producto = this.data.id;
                     //https://ort-tallermoviles.herokuapp.com/api/productos/1
 
@@ -240,7 +249,7 @@
                         error: function (xml, error, status) {
                             ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
                         },
-                        complete: function() {
+                        complete: function () {
                             $("#cargando").hide();
                         }
                     });
