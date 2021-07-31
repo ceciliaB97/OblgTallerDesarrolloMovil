@@ -60,14 +60,6 @@
         </ons-page>
     </template>
 
-    <template id="temp_locales">
-        <ons-page id="pag_locales">
-            <section>
-                <h1>Locales</h1>
-            </section>
-        </ons-page>
-    </template>
-
     <template id="temp_pantalla_principal">
         <ons-page id="pag_pantalla_principal">
             <h1>Bienvenido/a</h1>
@@ -78,8 +70,72 @@
         </ons-page>
     </template>
 
-    <template id="temp_pantalla_productos">
-        <ons-page id="pag_pantalla_productos">
+    <template id="t_pantalla_productos">
+        <ons-page id="p_pantalla_productos">
+            <script>
+                ons.getScriptPage().onInit = function(){
+                    //Se ejecuta una unica vez => Cuando se carga la pagina.
+                    
+                }
+                ons.getScriptPage().onShow = function(){
+                    //Se ejecuta siempre = > Cuando se muestra se la pagina.
+                    let usuario = sessionStorage.getItem("usuario");
+                    usuario = JSON.parse(usuario);
+                    $("#l_lista_productos").empty();
+                    $("#saludo").html(`Hola <strong>${usuario.email}</strong>`);
+                    // https://onsen.io/v2/api/css.html#list-category
+                    // http://images.marcelocaiafa.com/local/1.jpg
+                    $("#spn_txt_loading").text("Cargando productos...");
+                    $("#cargando").show();
+                    $.ajax({
+                        url:"http://api.marcelocaiafa.com/local",
+                        type:"GET",
+                        dataType:"json",
+                        success: function(respuesta){
+                            let item = "";
+                            let url  = "";
+                            $.each(respuesta.descripcion, function(pos, local){
+                                url = `http://images.marcelocaiafa.com/local/${local.imagen}`;
+                                // item = `<li class="list-item">
+                                //     <div class="list-item__left">
+                                //     <img class="list-item__thumbnail" src="${url}" alt="Cute kitten">
+                                //     </div>
+                                //     <div class="list-item__center">
+                                //     <div class="list-item__title">${local.nombre}</div>
+                                //     <div class="list-item__subtitle">${local.telefono}</div>
+                                //     </div>
+                                // </li>`;
+                                item = `<ons-list-item modifier="chevron longdivider" tappable tap-background-color="#A6FF33" data-id="${local.id}" class="listado_productos">
+                                        <div class="left">
+                                            <img class="list-item__thumbnail" src="${url}">
+                                        </div>
+                                        <div class="center">
+                                            <span class="list-item__title">${local.nombre}</span><span class="list-item__subtitle">${local.telefono}</span>
+                                        </div>
+                                        </ons-list-item>`;
+                                $("#l_lista_productos").append(item);
+                            });
+                        },
+                        error: function (xml, err, status) {
+                            ons.notification.toast(xml.responseJSON.descripcion, { "timeout": 3000 });
+                        },
+                        complete:function(){
+                            $("#cargando").hide();
+                        }
+                    });
+                }   
+            </script>
+            <section>
+                <h1>Listado de productos</h1>
+                <p id="saludo"></p>
+                <!-- <ul class="list" id="l_lista_productos"></ul> -->
+                <ons-list id="l_lista_productos"></ons-list>
+            </section>
+        </ons-page>
+    </template>
+    
+    <template id="temp_detalle_productos">
+        <ons-page id="pag_detalle_productos">
             <!--ACÁ VAN LOS PRODUCTOS-->
             <!--Cada producto tiene NOMBRE, PRECIO, FOTO, CÓDIGO, ETIQUETAS, ESTADO-->
             <p><input type="text" class="text-input text-input--material" placeholder="Filtrar productos..."></p>
@@ -101,7 +157,7 @@
                             let item_local = "";
                             $.each(respuesta.descripcion, function (pos, producto_item) {
                                 item = `
-                                <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="pantalla_productos_listado_class" data-id="${producto_item._id}" data-codigo="${producto_item.codigo}">
+                                <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="detalle_productos_listado_class" data-id="${producto_item._id}" data-codigo="${producto_item.codigo}">
                                     <div class="list-item__left">
                                     <img class="list-item__thumbnail" src="https://ort-tallermoviles.herokuapp.com/api/productos/${producto_item.urlImagen}" alt="Local ${producto_item.nombre}">
                                     </div>
@@ -113,7 +169,7 @@
                                     </div>
                                 </ons-list-item>
                                 `;
-                                $("#pantalla_productos_ul_listado").append(item);
+                                $("#detalle_productos_ul_listado").append(item);
                             });
                         },
                         error: function (xml, error, status) {
@@ -124,15 +180,15 @@
                         }
                     });
 
-                    $(document).on("click", "#pantalla_productos_listado_class", function() {
+                    $(document).on("click", "#detalle_productos_listado_class", function() {
                         alert($(this).data("id"));
                     });
                 }
             </script>
             <section>
-                <h1>Locales</h1>
+                <h1>productos</h1>
                 <p id="saludo"></p>
-                <ons-list id="pantalla_productos_ul_listado" class="list">
+                <ons-list id="detalle_productos_ul_listado" class="list">
                 </ons-list>
             </section>
         </ons-page>

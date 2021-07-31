@@ -3,9 +3,9 @@ $(document).ready(function () {
     //alert('ready');
 
     $(document).on("click", ".pantalla_productos_listado_class", function () {
-        let id_local = $(this).data("id");
+        let id_producto = $(this).data("id");
         let nav = document.getElementById("nav");
-        nav.pushPage("temp_infoLocal", { data: { id: id_local } });
+        nav.pushPage("temp_infoproducto", { data: { id: id_producto } });
     });
 
     //#region login
@@ -48,7 +48,7 @@ $(document).ready(function () {
                 data: datos,
                 success: function (respuesta) {
                     let nav = document.getElementById("nav");
-                    nav.pushPage("temp_locales");
+                    nav.pushPage("temp_productos");
                     nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
                     //ons.notification.toast("Logueado corretamente", { timeout: 2000 });
                 },
@@ -154,7 +154,9 @@ $(document).ready(function () {
     //#endregion redirigir a registro
 
     // MAIN MENU
-    $(document).on("click","#btn_pantalla_principal_productos", function(){
-        // Plantilla para side menu
+    $(document).on("click",".listado_productos",function(){
+        let id_producto  = $(this).data("id");
+        let nav = document.getElementById("nav");  
+        nav.pushPage("t_info_producto", {data: {id:id_producto}});
     });
 });
