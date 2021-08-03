@@ -32,9 +32,11 @@
                 <p><input type="text" id="login_usuario" placeholder="Usuario" class="text-input text-input--material">
                 </p>
                 <p><input type="password" id="login_password" placeholder="Contrase&ntilde;a"
-                        class="text-input text-input--material"></p>
+                        class="text-input text-input--material"> <ons-icon icon="fa-eye-slash" id="mostrar_pwd"></ons-icon></p>
                 <ons-button id="login_btn">Login</ons-button>
                 <ons-button id="login_register_btn" modifier="outline">Register</ons-button>
+                <p><label for="swt_recordar_password">Recordar Contrase&ntilde;a</label></p>
+                <ons-switch id="swt_recordar_password" input-id="swt_recordar_password2" modifier="material"></ons-switch>
             </section>
         </ons-page>
     </template>
@@ -83,11 +85,11 @@
     <template id="temp_pantalla_productos">
         <ons-page id="pag_pantalla_productos">
             <script>
-                ons.getScriptPage().onInit = function () {
+                ons.getScriptPage().onInit = function() {
                     //Se ejecuta una unica vez => Cuando se carga la pagina.
 
                 }
-                ons.getScriptPage().onShow = function () {
+                ons.getScriptPage().onShow = function() {
                     //Se ejecuta siempre = > Cuando se muestra se la pagina.
 
                     //ESTO ES LO QUE TENEMOS QUE REVISAR - 
@@ -108,30 +110,32 @@
                         }
                     });
                     $.ajax({
-                        url: "http://api.marcelocaiafa.com/producto",
+                        url: "https://ort-tallermoviles.herokuapp.com/api/productos",
                         type: "GET",
                         dataType: "json",
-                        success: function (respuesta) {
+                        success: function(respuesta) {
                             let item = "";
                             let url = "";
-                            $.each(respuesta.descripcion, function (pos, producto) {
-                                url = `http://images.marcelocaiafa.com/producto/${producto.foto}`;
-                                item = `<ons-list-item modifier="chevron longdivider" tappable tap-background-color="#A6FF33" data-id="${producto.id}" class="listado_productos">
+                            $.each(respuesta.descripcion, function(pos, producto) {
+                                url = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto.urlImagen}.jpg.`;
+                                item = `<ons-list-item modifier="chevron longdivider" tappable tap-background-color="#A6FF33" data-id="${producto._id}" class="listado_productos">
                                         <div class="left">
                                             <img class="list-item__thumbnail" src="${url}">
                                         </div>
                                         <div class="center">
                                             <span class="list-item__title">${producto.nombre}</span><span class="list-item__subtitle">${producto.precio}</span>
-                                            <span class="list-item">${producto.etiqueta}></span><span class="list-item">${producto.estado}</span>
+                                            <span class="list-item">Estado: ${producto.estado}></span><span class="list-item">${$.each(producto.etiqueta, function(pos, tag){
+                                                item.append(`<p>${tag}</p>`);
+                                            })}</span>
                                         </div>
                                         </ons-list-item>`; // Falta agregar ícono de FAVORITO a los productos
                                 $("#l_lista_productos").append(item);
                             });
                         },
-                        error: function (xml, err, status) {
-                            ons.notification.toast(xml.responseJSON.descripcion, { "timeout": 3000 });
+                        error: function(xml, err, status) {
+                            ons.notification.toast(xml.responseJSON.error, { "timeout": 3000 });
                         },
-                        complete: function () {
+                        complete: function() {
                             $("#cargando").hide();
                         }
                     });
@@ -153,7 +157,7 @@
             <p><input type="text" class="text-input text-input--material" placeholder="Filtrar productos..."></p>
 
             <script>
-                ons.getScriptPage().onShow = function () {
+                ons.getScriptPage().onShow = function() {
                     let usuario = sessionStorage.getItem("usuario");
                     usuario = JSON.parse(usuario);
                     $("#saludo").html(`Hola <strong>${usuario.email}</strong>`);
@@ -165,9 +169,9 @@
                         url: `https://ort-tallermoviles.herokuapp.com/api/productos`,
                         type: "GET",
                         dataType: "json",
-                        success: function (respuesta) {
+                        success: function(respuesta) {
                             let item_producto = "";
-                            $.each(respuesta.descripcion, function (pos, producto_item) {
+                            $.each(respuesta.descripcion, function(pos, producto_item) {
                                 item = `
                                 <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="listado_productos_listado_class" data-id="${producto_item._id}" data-codigo="${producto_item.codigo}">
                                     <div class="list-item__left">
@@ -184,15 +188,15 @@
                                 $("#listado_productos_ul_listado").append(item);
                             });
                         },
-                        error: function (xml, error, status) {
+                        error: function(xml, error, status) {
                             ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
                         },
-                        complete: function () {
+                        complete: function() {
                             $("#cargando").hide();
                         }
                     });
 
-                    $(document).on("click", "#listado_productos_listado_class", function () {
+                    $(document).on("click", "#listado_productos_listado_class", function() {
                         alert($(this).data("id"));
                     });
                 }
@@ -209,7 +213,7 @@
     <template id="temp_info_producto">
         <ons-page id="pag_info_producto">
             <script>
-                ons.getScriptPage().onShow = function () {
+                ons.getScriptPage().onShow = function() {
                     let id_producto = this.data.id;
                     //https://ort-tallermoviles.herokuapp.com/api/productos/1
 
@@ -222,7 +226,7 @@
                         //headers: {
                         //    "token": respuesta.token
                         //},
-                        success: function (producto_info) {
+                        success: function(producto_info) {
                             let url_local_img = `http://images.marcelocaiafa.com/local/${producto_info.imagen}`;
                             $("#producto_info_img").attr("src", url_local_img);
                             $("#producto_info_nombre").text(producto_info.nombre);
@@ -246,10 +250,10 @@
                             // nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
                             //ons.notification.toast("Logueado corretamente", { timeout: 2000 });
                         },
-                        error: function (xml, error, status) {
+                        error: function(xml, error, status) {
                             ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
                         },
-                        complete: function () {
+                        complete: function() {
                             $("#cargando").hide();
                         }
                     });

@@ -1,6 +1,78 @@
+function login(datos) {
+    datos = JSON.stringify(datos);
+    //ajax setup 
+    $.ajaxSetup({
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    //objeto JS
+    let url = `https://ort-tallermoviles.herokuapp.com/api/usuarios/session`;
+    $.ajax({
+        url: url,
+        type: "POST",
+        dataType: "json",
+        data: datos,
+        success: function (respuesta) {
+            sessionStorage.setItem("usuario", JSON.stringify(respuesta.data));
+            localStorage.setItem("token", JSON.stringify(respuesta.data.token));
+            let nav = document.getElementById("nav");
+            nav.pushPage("temp_pantalla_productos");
+            nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
+            //ons.notification.toast("Logueado corretamente", { timeout: 2000 });
+        },
+        error: function (xml, error, status) {
+            ons.notification.toast(xml.responseJSON.error, { timeout: 4000 });
+        }
+    });
+
+}
+
+function login_token(tokenDato) {
+    //ajax setup 
+    $.ajaxSetup({
+        headers: {
+            "Content-Type": "application/json",
+            "token" : tokenDato
+        }
+    });
+}
+
+function verificar_token() {
+    if(localStorage.getItem("token")) {
+        let tokenDato = {
+            "token" : localStorage.getItem("token")
+        };
+        login_token(tokenDato);
+    }
+}
+
+function verificar_login() {
+    if (localStorage.getItem("email") && localStorage.getItem("password")) {
+        let datos = {
+            "email": localStorage.getItem("email"),
+            "password": localStorage.getItem("password")
+        }
+        login(datos);
+    }
+}
+
 $(document).ready(function () {
     //DOM ready => se puede manipular elementos html desde JS
     //alert('ready');
+
+    verificar_login();
+
+    $(document).on("click", "#mostrar_pwd", function() {
+        if ($(this).attr("icon") == 'fa-eye') {
+            $(this).attr("icon", "fa-eye-slash");
+            $("#login_password").attr("type", "password");
+        }
+        else {
+            $(this).attr("icon", "fa-eye");
+            $("#login_password").attr("type", "text");
+        }
+    });
 
     $(document).on("click", ".pantalla_productos_listado_class", function () {
         let id_producto = $(this).data("id");
@@ -31,32 +103,9 @@ $(document).ready(function () {
             };
             //CONVERTIR EL OBJETO 'DATOS' A TEXTO PLANO, PARA QUE LO ACEPTE LA API
             //puede ser NECESARIO PARA LA API o NO
-            datos = JSON.stringify(datos);
+            //datos = JSON.stringify(datos);
 
-            //ajax setup 
-            $.ajaxSetup({
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-            //objeto JS
-            let url = `https://ort-tallermoviles.herokuapp.com/api/usuarios/session`;
-            $.ajax({
-                url: url,
-                type: "POST",
-                dataType: "json",
-                data: datos,
-                success: function (respuesta) {
-                    sessionStorage.setItem("usuario", JSON.stringify(respuesta.data));
-                    let nav = document.getElementById("nav");
-                    nav.pushPage("temp_pantalla_productos");
-                    nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
-                    //ons.notification.toast("Logueado corretamente", { timeout: 2000 });
-                },
-                error: function (xml, error, status) {
-                    ons.notification.toast(xml.responseJSON.error, { timeout: 4000 });
-                }
-            });
+            login(datos);
 
         } catch (error) {
             ons.notification.toast(error, { timeout: 2000 });
