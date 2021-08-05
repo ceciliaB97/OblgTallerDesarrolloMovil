@@ -74,6 +74,9 @@
     <template id="temp_registro">
         <ons-page id="pag_registro">
             <ons-toolbar>
+                <div class="left">
+                    <ons-toolbar-button icon="fa-chevron-left" onclick="fn.load('temp_login', 'pag_login')"></ons-toolbar-button>
+                </div>
                 <div class="center">Registrarse</div>
             </ons-toolbar>
             <section>
@@ -163,7 +166,7 @@
 
                                     <div class="list-item__center">
                                     <div class="list-item__title">${producto_item.nombre}</div>
-                                    <div class="list-item__subtitle">${producto_item.precio}t</div>
+                                    <div class="list-item__subtitle">$U${producto_item.precio}</div>
                                     <div class="list-item__subtitle">${producto_item.estado}t</div>
                                     </div>
                                 </ons-list-item>
@@ -285,7 +288,7 @@
                         //    "token": respuesta.token
                         //},
                         success: function (producto_info) {
-                            let url_local_img = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto.urlImagen}.jpg`;
+                            let url_local_img = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto_info.urlImagen}.jpg`;
                             $("#producto_info_img").attr("src", url_local_img);
                             $("#producto_info_nombre").text(producto_info.nombre);
                             $("#producto_info_descripcion").text(producto_info.descripcion);
@@ -349,6 +352,18 @@
                         </div>
                     </ons-card>
                 </article>
+                <ons-speed-dial position="bottom right" direction="up">
+                    <ons-fab>
+                        <ons-icon icon="fa-plus-circle"></ons-icon>
+                    </ons-fab>
+                    <ons-speed-dial-item id="spd_quitar_favorito">
+                        <ons-icon icon="md-block" onclick="eliminar_producto_favorito()">
+                        </ons-icon>
+                    </ons-speed-dial-item>
+                    <ons-speed-dial-item id="spd_agregar_favorito">
+                        <ons-icon icon="fa-star" onclick="agregar_producto_favorito()"></ons-icon>
+                    </ons-speed-dial-item>
+                </ons-speed-dial>
             </section>
             <ons-bottom-toolbar>
                 <div style="text-align: center; line-height: 44px;">
@@ -399,8 +414,8 @@
                             let item = "";
                             let url = "";
                             $.each(respuesta.data, function (pos, producto) {
-                                url = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto.urlImagen}.jpg.`;
-                                item = `<ons-list-item modifier="chevron longdivider" tappable tap-background-color="#A6FF33" data-id="${producto._id}" class="listado_productos">
+                                url = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto.urlImagen}.jpg`;
+                                item = `<ons-list-item modifier="chevron longdivider" tappable tap-background-color="#A6FF33" data-id="${producto._id}" class="listado_pedidos">
                                         <div class="left">
                                             <img class="list-item__thumbnail" src="${url}">
                                         </div>

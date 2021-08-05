@@ -192,18 +192,14 @@ $(document).ready(function () {
 
     //send home
     $(document).on("click", ".send_home", function () {
-        let id_producto = $(this).data("id");
-        //let nav = document.getElementById("nav");
-        //nav.pushPage("temp_infoproducto", { data: { id: id_producto } });
+        //let id_producto = $(this).data("id");
         fn.load('temp_pantalla_principal', 'pag_pantalla_principal');
     });
 
-
-    $(document).on("click", ".pantalla_productos_listado_class", function () {
+    //desde listado productos a info producto
+    $(document).on("click", ".listado_productos_listado_class", function () {
         let id_producto = $(this).data("id");
-        //let nav = document.getElementById("nav");
-        //nav.pushPage("temp_infoproducto", { data: { id: id_producto } });
-        fn.load('temp_infoproducto', 'pag_infoproducto', {data: {id:id_producto}});
+        fn.load('temp_info_producto', 'pag_info_producto', {data: {id:id_producto}});
     });
 
     //#region login
@@ -304,7 +300,6 @@ $(document).ready(function () {
                 dataType: "json",
                 data: datos,
                 success: function (respuesta) {
-                    let nav = document.getElementById("nav");
                     fn.load('temp_login', 'pag_login');
                     ons.notification.toast("Registrado corretamente", { timeout: 2000 });
                 },
@@ -322,16 +317,14 @@ $(document).ready(function () {
 
     //#region redirigir a registro
     $(document).on("click", "#login_register_btn", function () {
-        let nav = document.getElementById("nav");
-        nav.pushPage("temp_registro");
+        fn.load('temp_registro', 'pag_registro');
         nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
     });
     //#endregion redirigir a registro
 
     // MAIN MENU
-    $(document).on("click",".listado_productos",function(){
-        let id_producto  = $(this).data("id");
-        let nav = document.getElementById("nav");  
-        nav.pushPage("t_info_producto", {data: {id:id_producto}});
+    $(document).on("click",".listado_pedidos",function(){
+        let id_pedido  = $(this).data("id");
+        fn.load('temp_info_producto', 'pag_info_producto', {data: {id:id_pedido}});  
     });
 });
