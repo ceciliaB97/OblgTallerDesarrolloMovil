@@ -75,7 +75,8 @@
         <ons-page id="pag_registro">
             <ons-toolbar>
                 <div class="left">
-                    <ons-toolbar-button icon="fa-chevron-left" onclick="fn.load('temp_login', 'pag_login')"></ons-toolbar-button>
+                    <ons-toolbar-button icon="fa-chevron-left" onclick="fn.load('temp_login', 'pag_login')">
+                    </ons-toolbar-button>
                 </div>
                 <div class="center">Registrarse</div>
             </ons-toolbar>
@@ -273,7 +274,7 @@
         <ons-page id="pag_info_producto">
             <script>
                 ons.getScriptPage().onShow = function () {
-                    let id_producto = this.data.id;
+                    let codigo_producto = this.data.codigo;
                     //https://ort-tallermoviles.herokuapp.com/api/productos/1
 
                     $("#spn_txt_cargando").text('Cargando local...');
@@ -281,36 +282,39 @@
                     //ajax setup 
                     ajax_setup();
                     $.ajax({
-                        url: `https://ort-tallermoviles.herokuapp.com/api/productos/${id_producto}`,
+                        url: `https://ort-tallermoviles.herokuapp.com/api/productos?codigo=${codigo_producto}`,
                         type: "GET",
                         dataType: "json",
                         //headers: {
                         //    "token": respuesta.token
                         //},
                         success: function (producto_info) {
-                            let url_local_img = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto_info.urlImagen}.jpg`;
-                            $("#producto_info_img").attr("src", url_local_img);
-                            $("#producto_info_nombre").text(producto_info.nombre);
-                            $("#producto_info_descripcion").text(producto_info.descripcion);
-                            //https://onsen.io/v2/api/js/ons-icon.html
-                            $("#producto_info_span_precio").html(`<ons-icon icon="fa-map-marked"></ons-icon> ${producto_info.precio}`);
-                            $("#producto_info_span_estado").html(`<ons-icon icon="fa-phone"></ons-icon> ${producto_info.estado}`);
-                            $("#producto_info_span_puntaje").html(`<ons-icon icon="fa-clock"></ons-icon> ${producto_info.puntaje}`);
+                            $.each(producto_info.data, function (pos, producto_respuesta) {
+                                let url_local_img = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto_respuesta.urlImagen}.jpg`;
+                                $("#producto_info_img").attr("src", url_local_img);
+                                $("#producto_info_nombre").text(producto_respuesta.nombre);
+                                $("#producto_info_descripcion").text(producto_respuesta.descripcion);
+                                //https://onsen.io/v2/api/js/ons-icon.html
+                                $("#producto_info_span_precio").html(`<ons-icon icon="fa-map-marked"></ons-icon> ${producto_respuesta.precio}`);
+                                $("#producto_info_span_estado").html(`<ons-icon icon="fa-phone"></ons-icon> ${producto_respuesta.estado}`);
+                                $("#producto_info_span_puntaje").html(`<ons-icon icon="fa-clock"></ons-icon> ${producto_respuesta.puntaje}`);
 
-                            $.each(producto_info.etiquetas, function (pos, producto_etiqueta) {
-                                $("#producto_info_span_etiquetas").append(`<p>${producto_info.etiquetas[pos]}</p>`);
+                                $.each(producto_respuesta.etiquetas, function (pos, producto_etiqueta) {
+                                    $("#producto_info_span_etiquetas").append(`<p>${producto_respuesta.etiquetas[pos]}</p>`);
+                                });
+
                             });
-
-                            //mapa
-                            var map = L.map('producto_info_map').setView([producto_info.coord.lat, producto_info.coord.lng], 15);
-
-                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            }).addTo(map);
-
-                            L.marker([producto_info.coord.lat, producto_info.coord.lng]).addTo(map)
-                                .bindPopup(`<strong>${producto_info.nombre}</strong><br>${producto_info.direccion}`);
-
+                            /*
+                                //mapa
+                                var map = L.map('producto_info_map').setView([producto_respuesta.coord.lat, producto_respuesta.coord.lng], 15);
+    
+                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                }).addTo(map);
+    
+                                L.marker([producto_info.coord.lat, producto_info.coord.lng]).addTo(map)
+                                    .bindPopup(`<strong>${producto_info.nombre}</strong><br>${producto_info.direccion}`);
+                            */
                             //let nav = document.getElementById("nav");
                             // nav.pushPage("temp_locales");
                             // nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
