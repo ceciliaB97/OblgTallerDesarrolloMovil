@@ -118,7 +118,7 @@ function login(datos) {
                 }
             });
             sessionStorage.setItem("usuario", JSON.stringify(respuesta.data));
-            localStorage.setItem("token", JSON.stringify(respuesta.data.token));
+            localStorage.setItem("token", respuesta.data.token);
             let nav = document.getElementById("nav");
             fn.load('temp_pantalla_principal', 'pag_pantalla_principal');
         },

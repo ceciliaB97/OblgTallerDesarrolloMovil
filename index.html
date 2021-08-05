@@ -179,8 +179,53 @@
                         }
                     });
 
-                    $(document).on("click", "#listado_productos_listado_class", function () {
-                        alert($(this).data("id"));
+                    $(document).on("click", ".listado_productos_listado_class", function () {
+                        let id_producto = $(this).data("id");
+                        fn.load('temp_info_producto', 'pag_info_producto', { data: { id: id_producto } });
+                    });
+
+                    $(document).on("click", "#listado_productos_btn", function () {
+                        let buscar = $("#listado_productos_filtrar").val();
+
+                        if (buscar === "") {
+                            ons.notification.toast("Debe ingresar un producto", { timeout: 4000 });
+                        } else {
+                            //vaciar html
+                            $("#listado_productos_ul_listado").html(``);
+                            //ajax setup 
+                            ajax_setup();
+                            $.ajax({
+                                url: `https://ort-tallermoviles.herokuapp.com/api/productos?nombre=${buscar}`,
+                                type: "GET",
+                                dataType: "json",
+                                success: function (respuesta) {
+                                    let item_producto = "";
+                                    $.each(respuesta.data, function (pos, producto_item) {
+                                        item = `
+                                    <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="listado_productos_listado_class" data-id="${producto_item._id}" data-codigo="${producto_item.codigo}">
+                                        <div class="list-item__left">
+                                        <img class="list-item__thumbnail" src="https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto_item.urlImagen}.jpg" alt="producto ${producto_item.nombre}">
+                                        </div>
+    
+                                        <div class="list-item__center">
+                                        <div class="list-item__title">${producto_item.nombre}</div>
+                                        <div class="list-item__subtitle">${producto_item.precio}t</div>
+                                        <div class="list-item__subtitle">${producto_item.estado}t</div>
+                                        </div>
+                                    </ons-list-item>
+                                    `;
+                                        $("#listado_productos_ul_listado").append(item);
+                                    });
+                                },
+                                error: function (xml, error, status) {
+                                    ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+                                },
+                                complete: function () {
+                                    $("#cargando").hide();
+                                }
+                            });
+                        }
+
                     });
                 }
             </script>
@@ -190,10 +235,17 @@
                 </div>
                 <div class="center">Productos</div>
             </ons-toolbar>
+
             <section>
-                <p id="saludo"></p>
-                <p>Filtrar por productos</p>
-                <p><input type="text" class="text-input text-input--material" placeholder="Producto"></p>
+                <article>
+                    <p id="saludo"></p>
+                    <p>Filtrar por productos</p>
+                    <p><input type="text" class="text-input text-input--material" placeholder="Producto"
+                            id="listado_productos_filtrar">&nbsp;<ons-button id="listado_productos_btn">Buscar
+                        </ons-button>
+                    </p>
+
+                </article>
                 <ons-list id="listado_productos_ul_listado" class="list">
                 </ons-list>
             </section>
@@ -233,14 +285,19 @@
                         //    "token": respuesta.token
                         //},
                         success: function (producto_info) {
-                            let url_local_img = `http://images.marcelocaiafa.com/local/${producto_info.imagen}`;
+                            let url_local_img = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto.urlImagen}.jpg`;
                             $("#producto_info_img").attr("src", url_local_img);
                             $("#producto_info_nombre").text(producto_info.nombre);
-                            $("#producto_info_descripcion").text(producto_info.data);
+                            $("#producto_info_descripcion").text(producto_info.descripcion);
                             //https://onsen.io/v2/api/js/ons-icon.html
-                            $("#producto_info_span_direccion").html(`<ons-icon icon="fa-map-marked"></ons-icon> ${producto_info.direccion}`);
-                            $("#producto_info_span_telefono").html(`<ons-icon icon="fa-phone"></ons-icon> ${producto_info.telefono}`);
-                            $("#producto_info_span_horario").html(`<ons-icon icon="fa-clock"></ons-icon> ${producto_info.horarios}`);
+                            $("#producto_info_span_precio").html(`<ons-icon icon="fa-map-marked"></ons-icon> ${producto_info.precio}`);
+                            $("#producto_info_span_estado").html(`<ons-icon icon="fa-phone"></ons-icon> ${producto_info.estado}`);
+                            $("#producto_info_span_puntaje").html(`<ons-icon icon="fa-clock"></ons-icon> ${producto_info.puntaje}`);
+
+                            $.each(producto_info.etiquetas, function (pos, producto_etiqueta) {
+                                $("#producto_info_span_etiquetas").append(`<p>${producto_info.etiquetas[pos]}</p>`);
+                            });
+
                             //mapa
                             var map = L.map('producto_info_map').setView([producto_info.coord.lat, producto_info.coord.lng], 15);
 
@@ -282,9 +339,10 @@
                             <p id="producto_info_descripcion"></p>
 
                             <ons-list>
-                                <ons-list-header><span id="producto_info_span_direccion"></span></ons-list-header>
-                                <ons-list-item><span id="producto_info_span_telefono"></span></ons-list-item>
-                                <ons-list-item><span id="producto_info_span_horario"></span></ons-list-item>
+                                <ons-list-header><span id="producto_info_span_precio"></span></ons-list-header>
+                                <ons-list-item><span id="producto_info_span_estado"></span></ons-list-item>
+                                <ons-list-item><span id="producto_info_span_puntaje"></span></ons-list-item>
+                                <ons-list-item><span id="producto_info_span_etiquetas"></span></ons-list-item>
                             </ons-list>
                             <div id="producto_info_map"></div>
                         </div>
@@ -421,9 +479,9 @@
                                     <div class="list-item__title">${productos_item.nombre}</div>
                                     <div class="list-item__subtitle">${productos_item.precio}t</div>
                                     <div class="list-item__subtitle">${productos_item.estado}t</div>
-                                    <div class="list-item__subtitle">${$.each(productos_item.etiquetas, function (pos, producto_etiqueta){
-                                        item_usuario += `<p>${productos_item.estado[pos]}</p>`;
-                                    })}</div>
+                                    <div class="list-item__subtitle">${$.each(productos_item.etiquetas, function (pos, producto_etiqueta) {
+                            item_usuario += `<p>${productos_item.estado[pos]}</p>`;
+                        })}</div>
                                     </div>
                                 </ons-list-item>
                                 `;
