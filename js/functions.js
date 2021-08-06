@@ -59,7 +59,7 @@ function eliminar_favorito(datos_producto) {
 
 function eliminar_producto_favorito() {
     eliminar_favorito(datos_producto);
-    ons.notification.toast("El usuario se elimin&oacute; correctamente", { timeout: 3000 });
+    ons.notification.toast("El prodcuto se elimin&oacute; correctamente de favoritos", { timeout: 3000 });
     $("#spd_quitar_favorito").attr('disabled', true);
     $("#spd_agregar_favorito").attr('disabled', false);
 }
@@ -72,7 +72,7 @@ function agregar_favorito(datos_producto) {
 
 function agregar_producto_favorito() {
     agregar_favorito(datos_producto);
-    ons.notification.toast("El usuario se agreg&oacute; correctamente", { timeout: 3000 });
+    ons.notification.toast("El producto se agreg&oacute; correctamente a favoritos", { timeout: 3000 });
     $("#spd_quitar_favorito").attr('disabled', false);
     $("#spd_agregar_favorito").attr('disabled', true);
 }
