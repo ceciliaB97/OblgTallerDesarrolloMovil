@@ -183,11 +183,6 @@
                         }
                     });
 
-                    $(document).on("click", ".listado_productos_listado_class", function () {
-                        let id_producto = $(this).data("id");
-                        fn.load('temp_info_producto', 'pag_info_producto', { data: { id: id_producto } });
-                    });
-
                     $(document).on("click", "#listado_productos_btn", function () {
                         let buscar = $("#listado_productos_filtrar").val();
 
@@ -260,7 +255,7 @@
                         </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
-                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" size="20px"></ons-icon>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px"></ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
                         <ons-icon style="color: rgb(40, 38, 38);" icon="fa-power-off" size="20px"></ons-icon>
@@ -289,6 +284,7 @@
                         //    "token": respuesta.token
                         //},
                         success: function (producto_info) {
+                            datos_producto = producto_info;
                             $.each(producto_info.data, function (pos, producto_respuesta) {
                                 let url_local_img = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto_respuesta.urlImagen}.jpg`;
                                 $("#producto_info_img").attr("src", url_local_img);
@@ -300,7 +296,7 @@
                                 $("#producto_info_span_puntaje").html(`<ons-icon icon="fa-clock"></ons-icon> ${producto_respuesta.puntaje}`);
 
                                 $.each(producto_respuesta.etiquetas, function (pos, producto_etiqueta) {
-                                    $("#producto_info_span_etiquetas").append(`<p>${producto_respuesta.etiquetas[pos]}</p>`);
+                                    $("#producto_info_span_etiquetas").append(`<p>#${producto_respuesta.etiquetas[pos]}</p>`);
                                 });
 
                             });
@@ -331,7 +327,7 @@
             </script>
             <ons-toolbar>
                 <div class="left">
-                    <ons-toolbar-button icon="fa-chevron-left" onclick="fn.open()"></ons-toolbar-button>
+                    <ons-toolbar-button icon="fa-chevron-left" onclick="fn.load('temp_listado_productos', 'pag_listado_productos')"></ons-toolbar-button>
                 </div>
                 <div class="center">Producto</div>
             </ons-toolbar>
@@ -376,7 +372,7 @@
                         </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
-                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" size="20px"></ons-icon>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px"></ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
                         <ons-icon style="color: rgb(40, 38, 38);" icon="fa-power-off" size="20px"></ons-icon>
@@ -405,7 +401,7 @@
                     //  $("#saludo").html(`Hola <strong>${usuario.nombre}</strong>`);
                     // https://onsen.io/v2/api/css.html#list-category
                     // http://images.marcelocaiafa.com/producto/1.jpg
-                    $("#span_txt_cargando").text("Cargando productos...");
+                    $("#span_txt_cargando").text("Cargando pedidos...");
                     $("#pantalla_cargando").show();
 
                     //ajax setup 
@@ -417,19 +413,28 @@
                         success: function (respuesta) {
                             let item = "";
                             let url = "";
-                            $.each(respuesta.data, function (pos, producto) {
-                                url = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto.urlImagen}.jpg`;
-                                item = `<ons-list-item modifier="chevron longdivider" tappable tap-background-color="#A6FF33" data-id="${producto._id}" class="listado_pedidos">
-                                        <div class="left">
-                                            <img class="list-item__thumbnail" src="${url}">
+                            $.each(respuesta.data, function (pos, pedido_info) {
+                                url = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${pedido_info.producto.urlImagen}.jpg`;
+                                item = `
+                                    <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="listado_productos_listado_class" data-id="${producto_item._id}" data-codigo="${producto_item.codigo}">
+                                        <div class="list-item__left">
+                                        <img class="list-item__thumbnail" src="https://ort-tallermoviles.herokuapp.com/assets/imgs/${pedido_info.producto.urlImagen}.jpg" alt="producto ${producto_item.nombre}">
                                         </div>
-                                        <div class="center">
-                                            <span class="list-item__title">${producto.nombre}</span><span class="list-item__subtitle">${producto.precio}</span>
-                                            <span class="list-item">Estado: ${producto.estado}></span><span class="list-item">${$.each(producto.etiqueta, function (pos, tag) {
-                                    item.append(`<p>${tag}</p>`);
-                                })}</span>
+    
+                                        <div class="list-item__center">
+                                        <div class="list-item__title">${pedido_info.producto.nombre}</div>
+                                        <div class="list-item__subtitle">Cantidad ${pedido_info.cantidad}t</div>
+                                        <div class="list-item__subtitle">${pedido_info.producto.total}t</div>
+                                        <div class="list-item__subtitle">${pedido_info.producto.estado}t</div>
                                         </div>
-                                        </ons-list-item>`; // Falta agregar ícono de FAVORITO a los productos
+                                        <div class="list-item__center">
+                                        <div class="list-item__title">Sucursal</div>
+                                        <div class="list-item__subtitle">${pedido_info.sucursal.ciudad}, ${pedido_info.sucursal.nombre}, ${pedido_info.sucursal.direccion}t</div>
+                                        <div class="list-item__subtitle">${pedido_info.comentario}t</div>
+                                        </div>
+                                    </ons-list-item>
+                                    `;
+
                                 $("#l_lista_productos").append(item);
                             });
                         },
@@ -437,7 +442,7 @@
                             ons.notification.toast(xml.responseJSON.error, { "timeout": 3000 });
                         },
                         complete: function () {
-                            $("#cargando").hide();
+                            $("#pantalla_cargando").hide();
                         }
                     });
                 }
@@ -460,7 +465,7 @@
                         </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
-                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" size="20px"></ons-icon>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px"></ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
                         <ons-icon style="color: rgb(40, 38, 38);" icon="fa-power-off" size="20px"></ons-icon>
@@ -485,46 +490,44 @@
 
                     let lista_fav = localStorage.getItem("favoritos");
                     lista_fav = JSON.parse(lista_fav);
+                    //console.log(lista_fav[0].data[0].urlImagen);
+                    //console.log(lista_fav[0].data);
 
-                    $.each(lista_fav, function (pos, productos_item) {
-                        url = `http://images.marcelocaiafa.com/${productos_item.foto}`;
-                        item_usuario = `
-                                <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="listado_usuarios_class" data-id="${productos_item.id}">
+                    $.each(lista_fav, function (pos, favoritos_item) {
+                        fav1_item = "";
+
+                        $.each(favoritos_item.data, function (pos, un_item_fav){
+                            fav1_item += `
+                                <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="listado_productos_listado_class" data-id="${un_item_fav._id}" data-codigo="${un_item_fav.codigo}">
                                     <div class="list-item__left">
-                                    <img class="list-item__thumbnail" src="https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto.urlImagen}.jpg" alt="${productos_item.nombre}">
+                                    <img class="list-item__thumbnail" src="https://ort-tallermoviles.herokuapp.com/assets/imgs/${un_item_fav.urlImagen}.jpg" alt="producto ${un_item_fav.nombre}">
                                     </div>
 
                                     <div class="list-item__center">
-                                    <div class="list-item__title">${productos_item.nombre}</div>
-                                    <div class="list-item__subtitle">${productos_item.precio}t</div>
-                                    <div class="list-item__subtitle">${productos_item.estado}t</div>
-                                    <div class="list-item__subtitle">${$.each(productos_item.etiquetas, function (pos, producto_etiqueta) {
-                            item_usuario += `<p>${productos_item.estado[pos]}</p>`;
-                        })}</div>
+                                    <div class="list-item__title">${un_item_fav.nombre}</div>
+                                    <div class="list-item__subtitle">$U${un_item_fav.precio}</div>
+                                    <div class="list-item__subtitle">${un_item_fav.estado}t</div>
                                     </div>
                                 </ons-list-item>
                                 `;
-                        $("#usuarios_ul_listado_favoritos").append(item_usuario);
+
+                        });
+
+                        $("#productos_ul_listado_favoritos").append(fav1_item);
                     });
 
                     $("#cargando").hide();
-
-                    $(document).on("click", "#_listado_usuarios_class", function () {
-                        alert($(this).data("id"));
-                    });
                 }
             </script>
             <ons-toolbar>
                 <div class="left">
                     <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
                 </div>
-                <div class="center">Productos</div>
+                <div class="center">Productos favoritos</div>
             </ons-toolbar>
             <section>
                 <p id="saludo"></p>
-                <p>Filtrar por productos</p>
-                <p><input type="text" class="text-input text-input--material" placeholder="Producto"></p>
-                <ons-list id="usuarios_ul_listado_favoritos" class="list">
+                <ons-list id="productos_ul_listado_favoritos" class="list">
                 </ons-list>
             </section>
             <ons-bottom-toolbar>
@@ -534,7 +537,7 @@
                         </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
-                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" size="20px"></ons-icon>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px"></ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
                         <ons-icon style="color: rgb(40, 38, 38);" icon="fa-power-off" size="20px"></ons-icon>
