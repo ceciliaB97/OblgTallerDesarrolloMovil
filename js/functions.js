@@ -59,7 +59,7 @@ function eliminar_favorito(datos_producto) {
 
 function eliminar_producto_favorito() {
     eliminar_favorito(datos_producto);
-    ons.notification.toast("El prodcuto se elimin&oacute; correctamente de favoritos", { timeout: 3000 });
+    ons.notification.toast("El producto se elimin&oacute; correctamente de favoritos", { timeout: 3000 });
     $("#spd_quitar_favorito").attr('disabled', true);
     $("#spd_agregar_favorito").attr('disabled', false);
 }

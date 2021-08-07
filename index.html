@@ -114,7 +114,7 @@
                 <div class="left">
                     <ons-toolbar-button icon="fa-bars" onclick="fn.open()"></ons-toolbar-button>
                 </div>
-                <div class="center">Principal</div>
+                <div class="center">Pinta Rico</div>
             </ons-toolbar>
             <section>
                 <img src="img/food.jpg" alt="food" class="page__background">
@@ -168,7 +168,7 @@
                                     <div class="list-item__center">
                                     <div class="list-item__title">${producto_item.nombre}</div>
                                     <div class="list-item__subtitle">$U${producto_item.precio}</div>
-                                    <div class="list-item__subtitle">${producto_item.estado}t</div>
+                                    <div class="list-item__subtitle">${producto_item.estado}</div>
                                     </div>
                                 </ons-list-item>
                                 `;
@@ -208,8 +208,8 @@
     
                                         <div class="list-item__center">
                                         <div class="list-item__title">${producto_item.nombre}</div>
-                                        <div class="list-item__subtitle">${producto_item.precio}t</div>
-                                        <div class="list-item__subtitle">${producto_item.estado}t</div>
+                                        <div class="list-item__subtitle">${producto_item.precio}</div>
+                                        <div class="list-item__subtitle">${producto_item.estado}</div>
                                         </div>
                                     </ons-list-item>
                                     `;
@@ -331,6 +331,7 @@
                 </div>
                 <div class="center">Producto</div>
             </ons-toolbar>
+            <ons-button id="realizar_pedido_btn">Realizar pedido</ons-button>
             <section>
                 <article id="producto_info_article">
                     <ons-card>
@@ -365,6 +366,7 @@
                     </ons-speed-dial-item>
                 </ons-speed-dial>
             </section>
+            
             <ons-bottom-toolbar>
                 <div style="text-align: center; line-height: 44px;">
                     <ons-toolbar-button>
@@ -506,7 +508,7 @@
                                     <div class="list-item__center">
                                     <div class="list-item__title">${un_item_fav.nombre}</div>
                                     <div class="list-item__subtitle">$U${un_item_fav.precio}</div>
-                                    <div class="list-item__subtitle">${un_item_fav.estado}t</div>
+                                    <div class="list-item__subtitle">${un_item_fav.estado}</div>
                                     </div>
                                 </ons-list-item>
                                 `;
