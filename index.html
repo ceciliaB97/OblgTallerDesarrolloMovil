@@ -255,7 +255,8 @@
                         </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
-                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px"></ons-icon>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px">
+                        </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
                         <ons-icon style="color: rgb(40, 38, 38);" icon="fa-power-off" size="20px"></ons-icon>
@@ -327,11 +328,15 @@
             </script>
             <ons-toolbar>
                 <div class="left">
-                    <ons-toolbar-button icon="fa-chevron-left" onclick="fn.load('temp_listado_productos', 'pag_listado_productos')"></ons-toolbar-button>
+                    <ons-toolbar-button icon="fa-chevron-left"
+                        onclick="fn.load('temp_listado_productos', 'pag_listado_productos')"></ons-toolbar-button>
                 </div>
                 <div class="center">Producto</div>
             </ons-toolbar>
-            <ons-button id="realizar_pedido_btn">Realizar pedido</ons-button>
+            <div style="text-align: center; margin-top: 5px; margin-bottom: 5px;">
+                <ons-button id="realizar_pedido_btn">Realizar pedido</ons-button>
+            </div>
+
             <section>
                 <article id="producto_info_article">
                     <ons-card>
@@ -366,7 +371,7 @@
                     </ons-speed-dial-item>
                 </ons-speed-dial>
             </section>
-            
+
             <ons-bottom-toolbar>
                 <div style="text-align: center; line-height: 44px;">
                     <ons-toolbar-button>
@@ -374,7 +379,8 @@
                         </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
-                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px"></ons-icon>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px">
+                        </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
                         <ons-icon style="color: rgb(40, 38, 38);" icon="fa-power-off" size="20px"></ons-icon>
@@ -467,7 +473,8 @@
                         </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
-                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px"></ons-icon>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px">
+                        </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
                         <ons-icon style="color: rgb(40, 38, 38);" icon="fa-power-off" size="20px"></ons-icon>
@@ -498,7 +505,7 @@
                     $.each(lista_fav, function (pos, favoritos_item) {
                         fav1_item = "";
 
-                        $.each(favoritos_item.data, function (pos, un_item_fav){
+                        $.each(favoritos_item.data, function (pos, un_item_fav) {
                             fav1_item += `
                                 <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="listado_productos_listado_class" data-id="${un_item_fav._id}" data-codigo="${un_item_fav.codigo}">
                                     <div class="list-item__left">
@@ -539,7 +546,8 @@
                         </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
-                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px"></ons-icon>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px">
+                        </ons-icon>
                     </ons-toolbar-button>
                     <ons-toolbar-button>
                         <ons-icon style="color: rgb(40, 38, 38);" icon="fa-power-off" size="20px"></ons-icon>
