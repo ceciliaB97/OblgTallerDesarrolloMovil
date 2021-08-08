@@ -370,7 +370,7 @@ $(document).ready(function () {
         let unitPrice = $("#producto_info_span_precio").val();
 
         if (number > 0) {
-             $("#precio_final_p").push("Precio final: " + (unitPrice * number));
+             $("#producto_info_span_precio_final").push("Precio final: " + (unitPrice * number));
         }
         else {
             alert("Ingrese un número mayor a 0.")
