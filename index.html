@@ -305,14 +305,14 @@
                                     $("#producto_info_span_etiquetas").append(`<p>#${producto_respuesta.etiquetas[pos]}</p>`);
                                 });
 
+                                $("#producto_info_span_pedido").html(`<ons-button data-codigo="${producto_respuesta.codigo}" id="producto_info_btn_pedido" class="center realizar_pedido_btn">Realizar
+                                            pedido</ons-button>`);
+
+
                                 if (producto_respuesta.estado != "en stock") {
-                                    $("#producto_info_span_pedido").html(`<ons-button data-codigo="${producto_respuesta.codigo}" class="center realizar_pedido_btn">Realizar
-                                            pedido</ons-button>`);
-                                    $("#producto_info_span_pedido").attr('disabled', true);
+                                    $("#producto_info_btn_pedido").attr('disabled', true);
                                 } else {
-                                    $("#producto_info_span_pedido").html(`<ons-button data-codigo="${producto_respuesta.codigo}" class="center realizar_pedido_btn">Realizar
-                                            pedido</ons-button>`);
-                                    $("#producto_info_span_pedido").attr('disabled', false);
+                                    $("#producto_info_btn_pedido").attr('disabled', false);
                                 }
 
                             });
@@ -544,7 +544,7 @@
                                                     //alert(info_sucursal_map.lat + " " + info_sucursal_map.lon);
 
                                                     //mapa   
-                                                    buildMap(latitude,longitude, nombre_suc, dir_suc);
+                                                    buildMap(latitude, longitude, nombre_suc, dir_suc);
                                                 });
                                             },
                                             error: function (xml, error, status) {
