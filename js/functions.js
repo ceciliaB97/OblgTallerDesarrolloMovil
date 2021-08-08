@@ -362,4 +362,18 @@ $(document).ready(function () {
         let id_pedido = $(this).data("id");
         fn.load('temp_info_producto', 'pag_info_producto', { data: { id: id_pedido } });
     });
+
+    // Agregar cantidad, alta pedido
+    $(document).on("click", "#agregar_cantidad_btn", function() {
+
+        let number = $("#cantidad_alta_pedido").val();
+        let unitPrice = $("#producto_info_span_precio").val();
+
+        if (number > 0) {
+             $("#precio_final_p").push("Precio final: " + (unitPrice * number));
+        }
+        else {
+            alert("Ingrese un número mayor a 0.")
+        }
+    });
 });

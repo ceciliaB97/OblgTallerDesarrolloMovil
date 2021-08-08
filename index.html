@@ -599,11 +599,19 @@
                                 <ons-list-item><span id="producto_info_span_etiquetas"></span></ons-list-item>
                                 <ons-list-item><span id="producto_info_span_etiquetas"></span></ons-list-item>
                                 <ons-list-item><span id="producto_info_span_mapa"></span></ons-list-item>
-                                <ons-list-item><span>
-                                        <ons-button id="finalizar_pedido_btn"
-                                            onclick="fn.load('temp_listado_productos', 'pag_listado_productos', {data: {codigo: codigo_producto}})"
-                                            class="center">Finalizar Compra</ons-button>
-                                    </span></ons-list-item>
+                                <ons-list-item>
+                                    <span id="producto_info_span_cantidad">
+                                        <input type="number" id="cantidad_alta_pedido" min="1" max="100">
+                                        <ons-button id="agregar_cantidad_btn">Agregar cantidad</ons-button>
+                                    </span>
+                                    <span>
+                                        <p id="precio_final_p"></p>
+                                    </span>
+                                </ons-list-item>
+                                <ons-button id="finalizar_pedido_btn"
+                                    onclick="fn.load('temp_listado_productos', 'pag_listado_productos', {data: {codigo: codigo_producto}})"
+                                    class="center">Finalizar Compra</ons-button>
+                                </span></ons-list-item>
                             </ons-list>
                             <div id="sucursal_mapa"></div>
                         </div>
