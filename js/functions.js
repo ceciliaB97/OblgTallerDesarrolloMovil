@@ -1,3 +1,17 @@
+//#region mapa
+function buildMap(lat, lon, nom_suc, dir_suc) {
+    document.getElementById('sucursal_mapa').innerHTML = "<div id='map' style='width: 100%; height: 50%;'></div>";
+    var map = L.map('map').setView([lat, lon], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    L.marker([lat, lon]).addTo(map)
+        .bindPopup(`<strong>${nom_suc}</strong><br>${dir_suc}`)
+        .openPopup()
+}
+//#endregion mapa
+
 //#region fn
 window.fn = {};
 
@@ -214,6 +228,13 @@ $(document).ready(function () {
         let codigo_producto = $(this).data("codigo");
         //alert(codigo_producto);
         fn.load('temp_info_producto', 'pag_info_producto', { data: { codigo: codigo_producto } });
+    });
+
+    //desde info producto a alta pedido
+    $(document).on("click", ".realizar_pedido_btn", function () {
+        let codigo_producto = $(this).data("codigo");
+        //alert(codigo_producto);
+        fn.load('temp_alta_pedido', 'pag_alta_pedido', { data: { codigo: codigo_producto } });
     });
 
     //#region login

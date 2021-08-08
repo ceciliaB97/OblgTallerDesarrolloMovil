@@ -12,6 +12,13 @@
     <link rel="stylesheet" href="OnsenUI-dist-2.11.2/css/onsenui.min.css">
     <link rel="stylesheet" href="OnsenUI-dist-2.11.2/css/old-onsen-css-components.min.css">
     <script src="OnsenUI-dist-2.11.2/js/onsenui.min.js"></script>
+    <!-- Libreria mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
 </head>
 
 <body>
@@ -292,26 +299,23 @@
                                 $("#producto_info_nombre").text(producto_respuesta.nombre);
                                 $("#producto_info_descripcion").text(producto_respuesta.descripcion);
                                 //https://onsen.io/v2/api/js/ons-icon.html
-                                $("#producto_info_span_precio").html(`<ons-icon icon="fa-map-marked"></ons-icon> ${producto_respuesta.precio}`);
-                                $("#producto_info_span_estado").html(`<ons-icon icon="fa-phone"></ons-icon> ${producto_respuesta.estado}`);
-                                $("#producto_info_span_puntaje").html(`<ons-icon icon="fa-clock"></ons-icon> ${producto_respuesta.puntaje}`);
-
+                                $("#producto_info_span_precio").html(`<ons-icon icon="fa-dollar-sign"></ons-icon>&nbsp;${producto_respuesta.precio}`);
+                                $("#producto_info_span_estado").html(`<ons-icon icon="fa-box"></ons-icon>&nbsp;${producto_respuesta.estado}`);
                                 $.each(producto_respuesta.etiquetas, function (pos, producto_etiqueta) {
                                     $("#producto_info_span_etiquetas").append(`<p>#${producto_respuesta.etiquetas[pos]}</p>`);
                                 });
 
+                                if (producto_respuesta.estado != "en stock") {
+                                    $("#producto_info_span_pedido").html(`<ons-button data-codigo="${producto_respuesta.codigo}" class="center realizar_pedido_btn">Realizar
+                                            pedido</ons-button>`);
+                                    $("#producto_info_span_pedido").attr('disabled', true);
+                                } else {
+                                    $("#producto_info_span_pedido").html(`<ons-button data-codigo="${producto_respuesta.codigo}" class="center realizar_pedido_btn">Realizar
+                                            pedido</ons-button>`);
+                                    $("#producto_info_span_pedido").attr('disabled', false);
+                                }
+
                             });
-                            /*
-                                //mapa
-                                var map = L.map('producto_info_map').setView([producto_respuesta.coord.lat, producto_respuesta.coord.lng], 15);
-    
-                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                }).addTo(map);
-    
-                                L.marker([producto_info.coord.lat, producto_info.coord.lng]).addTo(map)
-                                    .bindPopup(`<strong>${producto_info.nombre}</strong><br>${producto_info.direccion}`);
-                            */
                             //let nav = document.getElementById("nav");
                             // nav.pushPage("temp_locales");
                             // nav.options = { animation: "lisft", animationOptions: { duration: 2 } };
@@ -333,10 +337,6 @@
                 </div>
                 <div class="center">Detalles</div>
             </ons-toolbar>
-            <div style="text-align: center; margin-top: 5px; margin-bottom: 5px;">
-                <ons-button id="realizar_pedido_btn">Realizar pedido</ons-button>
-            </div>
-
             <section>
                 <article id="producto_info_article">
                     <ons-card>
@@ -346,14 +346,13 @@
                         </div>
                         <div class="content">
                             <p id="producto_info_descripcion"></p>
-
                             <ons-list>
-                                <ons-list-header><span id="producto_info_span_precio"></span></ons-list-header>
+                                <ons-list-header><span>Detalle</span></ons-list-header>
+                                <ons-list-item><span id="producto_info_span_precio"></span></ons-list-item>
                                 <ons-list-item><span id="producto_info_span_estado"></span></ons-list-item>
-                                <ons-list-item><span id="producto_info_span_puntaje"></span></ons-list-item>
                                 <ons-list-item><span id="producto_info_span_etiquetas"></span></ons-list-item>
+                                <ons-list-item><span id="producto_info_span_pedido"></span></ons-list-item>
                             </ons-list>
-                            <div id="producto_info_map"></div>
                         </div>
                         </div>
                     </ons-card>
@@ -484,6 +483,166 @@
         </ons-page>
     </template>
 
+    <template id="temp_alta_pedido">
+        <ons-page id="pag_alta_pedido">
+            <script>
+                ons.getScriptPage().onShow = function () {
+                    let codigo_producto = this.data.codigo;
+                    let nombre_suc = "";
+                    let dir_suc = "";
+                    //https://ort-tallermoviles.herokuapp.com/api/productos/1
+
+                    $("#spn_txt_cargando").text('Cargando local...');
+                    $("#cargando").show();
+                    //ajax setup 
+                    ajax_setup();
+                    $.ajax({
+                        url: `https://ort-tallermoviles.herokuapp.com/api/productos?codigo=${codigo_producto}`,
+                        type: "GET",
+                        dataType: "json",
+                        //headers: {
+                        //    "token": respuesta.token
+                        //},
+                        success: function (producto_info) {
+                            datos_producto = producto_info;
+                            $.each(producto_info.data, function (pos, producto_respuesta) {
+                                let url_local_img = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto_respuesta.urlImagen}.jpg`;
+                                $("#producto_info_img").attr("src", url_local_img);
+                                $("#producto_info_nombre").text(producto_respuesta.nombre);
+                                $("#producto_info_descripcion").text(producto_respuesta.descripcion);
+                                //https://onsen.io/v2/api/js/ons-icon.html
+                                $("#producto_info_span_precio").html(`<ons-icon icon="fa-dollar-sign"></ons-icon>&nbsp;${producto_respuesta.precio}`);
+                                $("#producto_info_span_estado").html(`<ons-icon icon="fa-box"></ons-icon>&nbsp;${producto_respuesta.estado}`);
+                                $.each(producto_respuesta.etiquetas, function (pos, producto_etiqueta) {
+                                    $("#producto_info_span_etiquetas").append(`<p>#${producto_respuesta.etiquetas[pos]}</p>`);
+                                });
+
+                                if (producto_respuesta.estado != "en stock") {
+                                    $("#finalizar_pedido_btn").attr('disabled', true);
+                                }
+
+                            });
+
+                            //sucursales - empieza ajax
+                            ajax_setup();
+                            $.ajax({
+                                url: `https://ort-tallermoviles.herokuapp.com/api/sucursales`,
+                                type: "GET",
+                                dataType: "json",
+                                success: function (sucursales) {
+                                    $.each(sucursales.data, function (pos, sucursal_info) {
+                                        nombre_suc = sucursal_info.nombre;
+                                        dir_suc = sucursal_info.direccion;
+                                        $.ajax({
+                                            url: `https://nominatim.openstreetmap.org/search?street=${sucursal_info.direccion}&city=${sucursal_info.ciudad}&country=${sucursal_info.pais}&format=json`,
+                                            type: "GET",
+                                            dataType: "json",
+                                            success: function (info_map_sucursales) {
+                                                $.each(info_map_sucursales, function (pos, info_sucursal_map) {
+                                                    let latitude = info_sucursal_map.lat;
+                                                    let longitude = info_sucursal_map.lon;
+                                                    //alert(info_sucursal_map.lat + " " + info_sucursal_map.lon);
+
+                                                    //mapa   
+                                                    buildMap(latitude,longitude, nombre_suc, dir_suc);
+                                                });
+                                            },
+                                            error: function (xml, error, status) {
+                                                ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+                                            },
+                                            complete: function () {
+                                                $("#cargando").hide();
+                                            }
+                                        });
+                                    });
+                                },
+                                error: function (xml, error, status) {
+                                    ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+                                },
+                                complete: function () {
+                                    $("#cargando").hide();
+                                }
+                            });
+                            //sucursales - termina ajax
+
+                        },
+
+                        error: function (xml, error, status) {
+                            ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+                        },
+                        complete: function () {
+                            $("#cargando").hide();
+                        }
+                    });
+                }
+            </script>
+            <ons-toolbar>
+                <div class="left">
+                    <ons-toolbar-button icon="fa-chevron-left"
+                        onclick="fn.load('temp_listado_productos', 'pag_listado_productos')"></ons-toolbar-button>
+                </div>
+                <div class="center">Alta de Pedido</div>
+            </ons-toolbar>
+            <section>
+                <article id="producto_info_article">
+                    <ons-card>
+                        <img src="" id="producto_info_img" alt="Onsen UI" style="width: 100%">
+                        <div class="title">
+                            <span id="producto_info_nombre"></span>
+                        </div>
+                        <div class="content">
+                            <p id="producto_info_descripcion"></p>
+                            <ons-list>
+                                <ons-list-header><span>Detalle</span></ons-list-header>
+                                <ons-list-item><span id="producto_info_span_precio"></span></ons-list-item>
+                                <ons-list-item><span id="producto_info_span_estado"></span></ons-list-item>
+                                <ons-list-item><span id="producto_info_span_etiquetas"></span></ons-list-item>
+                                <ons-list-item><span id="producto_info_span_etiquetas"></span></ons-list-item>
+                                <ons-list-item><span id="producto_info_span_mapa"></span></ons-list-item>
+                                <ons-list-item><span>
+                                        <ons-button id="finalizar_pedido_btn"
+                                            onclick="fn.load('temp_listado_productos', 'pag_listado_productos', {data: {codigo: codigo_producto}})"
+                                            class="center">Finalizar Compra</ons-button>
+                                    </span></ons-list-item>
+                            </ons-list>
+                            <div id="sucursal_mapa"></div>
+                        </div>
+                        </div>
+                    </ons-card>
+                </article>
+                <ons-speed-dial position="bottom right" direction="up">
+                    <ons-fab>
+                        <ons-icon icon="fa-plus-circle"></ons-icon>
+                    </ons-fab>
+                    <ons-speed-dial-item id="spd_quitar_favorito">
+                        <ons-icon icon="md-block" onclick="eliminar_producto_favorito()">
+                        </ons-icon>
+                    </ons-speed-dial-item>
+                    <ons-speed-dial-item id="spd_agregar_favorito">
+                        <ons-icon icon="fa-star" onclick="agregar_producto_favorito()"></ons-icon>
+                    </ons-speed-dial-item>
+                </ons-speed-dial>
+            </section>
+
+            <ons-bottom-toolbar>
+                <div style="text-align: center; line-height: 44px;">
+                    <ons-toolbar-button>
+                        <ons-icon class="send_home" style="color: rgb(40, 38, 38);" icon="fa-home" size="20px">
+                        </ons-icon>
+                    </ons-toolbar-button>
+                    <ons-toolbar-button>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-sign-out" class="sign_out" size="20px">
+                        </ons-icon>
+                    </ons-toolbar-button>
+                    <ons-toolbar-button>
+                        <ons-icon style="color: rgb(40, 38, 38);" icon="fa-power-off" size="20px"></ons-icon>
+                    </ons-toolbar-button>
+                </div>
+            </ons-bottom-toolbar>
+        </ons-page>
+    </template>
+
+
     <template id="temp_listado_favoritos">
         <ons-page id="pag_listado_favoritos">
             <!--ACÁ VAN LOS PRODUCTOS-->
@@ -499,6 +658,10 @@
 
                     let lista_fav = localStorage.getItem("favoritos");
                     lista_fav = JSON.parse(lista_fav);
+
+                    if (lista_fav.length === 0) {
+                        $("#productos_ul_listado_favoritos").append(`<p>No has agregado ning&uacute;n favorito</p>`);
+                    }
                     //console.log(lista_fav[0].data[0].urlImagen);
                     //console.log(lista_fav[0].data);
 
