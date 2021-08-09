@@ -490,83 +490,98 @@
                     let codigo_producto = this.data.codigo;
                     let nombre_suc = "";
                     let dir_suc = "";
+                    let sucursal_obj;
                     //https://ort-tallermoviles.herokuapp.com/api/productos/1
 
-                    $("#spn_txt_cargando").text('Cargando local...');
+                    $("#spn_txt_cargando").text('Cargando detalles...');
                     $("#cargando").show();
-                    //ajax setup 
-                    ajax_setup();
+                    //ajax setup de info producto en alta pedido
+                    ajax_setup(codigo_producto);
                     $.ajax({
                         url: `https://ort-tallermoviles.herokuapp.com/api/productos?codigo=${codigo_producto}`,
                         type: "GET",
                         dataType: "json",
-                        //headers: {
-                        //    "token": respuesta.token
-                        //},
                         success: function (producto_info) {
                             datos_producto = producto_info;
                             $.each(producto_info.data, function (pos, producto_respuesta) {
+                                sessionStorage.setItem("precioUnitario", producto_respuesta.precio);
                                 let url_local_img = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${producto_respuesta.urlImagen}.jpg`;
-                                $("#producto_info_img").attr("src", url_local_img);
-                                $("#producto_info_nombre").text(producto_respuesta.nombre);
-                                $("#producto_info_descripcion").text(producto_respuesta.descripcion);
+                                $("#alta_producto_info_img").attr("src", url_local_img);
+                                $("#alta_producto_info_nombre").text(producto_respuesta.nombre);
                                 //https://onsen.io/v2/api/js/ons-icon.html
-                                $("#producto_info_span_precio").html(`<ons-icon icon="fa-dollar-sign"></ons-icon>&nbsp;${producto_respuesta.precio}`);
-                                $("#producto_info_span_estado").html(`<ons-icon icon="fa-box"></ons-icon>&nbsp;${producto_respuesta.estado}`);
+                                $("#alta_producto_info_span_precio").html(`<ons-icon icon="fa-dollar-sign"></ons-icon>&nbsp; 1 x ${producto_respuesta.precio}`);
                                 $.each(producto_respuesta.etiquetas, function (pos, producto_etiqueta) {
-                                    $("#producto_info_span_etiquetas").append(`<p>#${producto_respuesta.etiquetas[pos]}</p>`);
+                                    $("#alta_producto_info_span_etiquetas").append(`<p>#${producto_respuesta.etiquetas[pos]}</p>`);
                                 });
 
                                 if (producto_respuesta.estado != "en stock") {
-                                    $("#finalizar_pedido_btn").attr('disabled', true);
+                                    $("#alta_finalizar_pedido_btn").attr('disabled', true);
                                 }
-
                             });
+                        },
+                        error: function (xml, error, status) {
+                            ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+                        },
+                        complete: function () {
+                            $("#spn_txt_cargando").text('Cargando sucursales...');
+                        }
+                    });
 
-                            //sucursales - empieza ajax
-                            ajax_setup();
-                            $.ajax({
-                                url: `https://ort-tallermoviles.herokuapp.com/api/sucursales`,
-                                type: "GET",
-                                dataType: "json",
-                                success: function (sucursales) {
-                                    $.each(sucursales.data, function (pos, sucursal_info) {
-                                        nombre_suc = sucursal_info.nombre;
-                                        dir_suc = sucursal_info.direccion;
-                                        $.ajax({
-                                            url: `https://nominatim.openstreetmap.org/search?street=${sucursal_info.direccion}&city=${sucursal_info.ciudad}&country=${sucursal_info.pais}&format=json`,
-                                            type: "GET",
-                                            dataType: "json",
-                                            success: function (info_map_sucursales) {
-                                                $.each(info_map_sucursales, function (pos, info_sucursal_map) {
-                                                    let latitude = info_sucursal_map.lat;
-                                                    let longitude = info_sucursal_map.lon;
-                                                    //alert(info_sucursal_map.lat + " " + info_sucursal_map.lon);
+                    let precio_uni = sessionStorage.getItem("precioUnitario");
+                    sessionStorage.removeItem("precioUnitario");
+                    $("#cantidad_alta_pedido").on("input", function (precioUnitario) {
+                        $("#alta_producto_precio_final").text(` x ${$("#cantidad_alta_pedido").val() * precio_uni}`);
+                    });
 
-                                                    //mapa   
-                                                    buildMap(latitude, longitude, nombre_suc, dir_suc);
-                                                });
-                                            },
-                                            error: function (xml, error, status) {
-                                                ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
-                                            },
-                                            complete: function () {
-                                                $("#cargando").hide();
-                                            }
+                    //sucursales - empieza ajax
+                    ajax_setup();
+                    $.ajax({
+                        url: `https://ort-tallermoviles.herokuapp.com/api/sucursales`,
+                        type: "GET",
+                        dataType: "json",
+                        success: function (sucursales) {
+                            sessionStorage.setItem("lista_sucursales", JSON.stringify(sucursales));
+                            lista_sucur = JSON.parse(sessionStorage.getItem("lista_sucursales"));
+                            $.each(sucursales.data, function (pos, sucursal_info) {
+                                sucursal_obj = sucursal_info;
+                                nombre_suc = sucursal_info.nombre;
+                                dir_suc = sucursal_info.direccion;
+                                $("#alta_pedido_seleccionar_sucursal").append(`<option value="${sucursal_obj}">Sucursal ${nombre_suc}</option>`);
+                                //request para obtener lat y lon de direccion de sucursal
+
+                                /*
+                                $.ajax({
+                                    url: `https://nominatim.openstreetmap.org/search?street=${sucursal_info.direccion}&city=${sucursal_info.ciudad}&country=${sucursal_info.pais}&format=json`,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (info_map_sucursales) {
+                                        $.each(info_map_sucursales, function (pos, info_sucursal_map) {
+                                            let latitude = info_sucursal_map.lat;
+                                            let longitude = info_sucursal_map.lon;
+                                            //alert(info_sucursal_map.lat + " " + info_sucursal_map.lon);
+                                            //mapa   
+                                            buildMap(latitude, longitude, nombre_suc, dir_suc);
                                         });
-                                    });
-                                },
-                                error: function (xml, error, status) {
-                                    ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
-                                },
-                                complete: function () {
-                                    $("#cargando").hide();
-                                }
+                                    },
+                                    error: function (xml, error, status) {
+                                        ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+                                    },
+                                    complete: function () {
+                                        $("#cargando").hide();
+                                    }
+                                });
+
+                                */
                             });
-                            //sucursales - termina ajax
+
+                            let pedido_sucursal_seleccionada = $('#alta_pedido_seleccionar_sucursal option:selected').val();
+
+                            if (pedido_sucursal_seleccionada === sucursal_obj.nombre) {
+                                mapa_ajax(sucursal_obj);
+                            }
+
 
                         },
-
                         error: function (xml, error, status) {
                             ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
                         },
@@ -574,6 +589,7 @@
                             $("#cargando").hide();
                         }
                     });
+                    //sucursales - termina ajax
                 }
             </script>
             <ons-toolbar>
@@ -584,31 +600,36 @@
                 <div class="center">Alta de Pedido</div>
             </ons-toolbar>
             <section>
-                <article id="producto_info_article">
+                <article id="alta_producto_info_article">
                     <ons-card>
-                        <img src="" id="producto_info_img" alt="Onsen UI" style="width: 100%">
+                        <img src="" id="alta_producto_info_img" alt="Onsen UI" style="width: 100%">
                         <div class="title">
-                            <span id="producto_info_nombre"></span>
+                            <span id="alta_producto_info_nombre"></span>
                         </div>
                         <div class="content">
-                            <p id="producto_info_descripcion"></p>
                             <ons-list>
                                 <ons-list-header><span>Detalle</span></ons-list-header>
-                                <ons-list-item><span id="producto_info_span_precio"></span></ons-list-item>
-                                <ons-list-item><span id="producto_info_span_estado"></span></ons-list-item>
-                                <ons-list-item><span id="producto_info_span_etiquetas"></span></ons-list-item>
-                                <ons-list-item><span id="producto_info_span_etiquetas"></span></ons-list-item>
-                                <ons-list-item><span id="producto_info_span_mapa"></span></ons-list-item>
+                                <ons-list-item><span id="alta_producto_info_span_precio"></span></ons-list-item>
                                 <ons-list-item>
-                                    <span id="producto_info_span_cantidad">
+                                    <span id="alta_producto_info_span_cantidad">
                                         <input type="number" id="cantidad_alta_pedido" min="1" max="100">
-                                        <ons-button id="agregar_cantidad_btn">Agregar cantidad</ons-button>
-                                    </span>                    
+                                        <span id="alta_producto_precio_final"></span>
+                                    </span>
                                 </ons-list-item>
+                                <ons-list-item><span id="alta_producto_info_span_sucursales">
+                                        <ons-select id="alta_pedido_seleccionar_sucursal" onchange="editSelects(event)">
+                                            <option value="material">Seleccionar Sucursal</option>
+                                        </ons-select>
+                                    </span></ons-list-item>
+                                <ons-list-item><span id="alta_producto_info_span_mapa"></span></ons-list-item>
                                 <ons-list-item>
+<<<<<<< HEAD
+                                    <span id="alta_producto_info_span_precio_final"></span>
+=======
                                     <span id="producto_info_span_precio_final">Precio final: </span>
+>>>>>>> e30d45b9f5c68a4e4a48b12c01ac75440e46c84a
                                 </ons-list-item>
-                                <ons-button id="finalizar_pedido_btn"
+                                <ons-button id="alta_finalizar_pedido_btn"
                                     onclick="fn.load('temp_listado_productos', 'pag_listado_productos', {data: {codigo: codigo_producto}})"
                                     class="center">Finalizar Compra</ons-button>
                                 </span></ons-list-item>
