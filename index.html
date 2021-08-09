@@ -540,38 +540,27 @@
                         type: "GET",
                         dataType: "json",
                         success: function (sucursales) {
-                            sessionStorage.setItem("lista_sucursales", JSON.stringify(sucursales));
+                            sessionStorage.setItem("lista_sucursales", JSON.stringify(sucursales.data));
                             lista_sucur = JSON.parse(sessionStorage.getItem("lista_sucursales"));
+                            //alert(sucursales.data[0].nombre);
+
+                            text_select = `
+                            <ons-select id="alta_pedido_seleccionar_sucursal" onchange="editSelects(event)">
+                                <option value="">Seleccione Sucursal</option>
+                                <option value="${sucursales.data[0].nombre}">${sucursales.data[0].nombre}</option>
+                                <option value="${sucursales.data[1].nombre}">${sucursales.data[1].nombre}</option>
+                                <option value="${sucursales.data[2].nombre}">${sucursales.data[2].nombre}</option>
+                                <option value="${sucursales.data[3].nombre}">${sucursales.data[3].nombre}</option>
+                                <option value="${sucursales.data[4].nombre}">${sucursales.data[4].nombre}</option>
+                            </ons-select>
+                            `;
+
+                            $("#alta_producto_info_span_sucursales").html(text_select);
+
                             $.each(sucursales.data, function (pos, sucursal_info) {
                                 sucursal_obj = sucursal_info;
                                 nombre_suc = sucursal_info.nombre;
                                 dir_suc = sucursal_info.direccion;
-                                $("#alta_pedido_seleccionar_sucursal").append(`<option value="${sucursal_obj}">Sucursal ${nombre_suc}</option>`);
-                                //request para obtener lat y lon de direccion de sucursal
-
-                                /*
-                                $.ajax({
-                                    url: `https://nominatim.openstreetmap.org/search?street=${sucursal_info.direccion}&city=${sucursal_info.ciudad}&country=${sucursal_info.pais}&format=json`,
-                                    type: "GET",
-                                    dataType: "json",
-                                    success: function (info_map_sucursales) {
-                                        $.each(info_map_sucursales, function (pos, info_sucursal_map) {
-                                            let latitude = info_sucursal_map.lat;
-                                            let longitude = info_sucursal_map.lon;
-                                            //alert(info_sucursal_map.lat + " " + info_sucursal_map.lon);
-                                            //mapa   
-                                            buildMap(latitude, longitude, nombre_suc, dir_suc);
-                                        });
-                                    },
-                                    error: function (xml, error, status) {
-                                        ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
-                                    },
-                                    complete: function () {
-                                        $("#cargando").hide();
-                                    }
-                                });
-
-                                */
                             });
 
                             let pedido_sucursal_seleccionada = $('#alta_pedido_seleccionar_sucursal option:selected').val();
@@ -610,17 +599,19 @@
                             <ons-list>
                                 <ons-list-header><span>Detalle</span></ons-list-header>
                                 <ons-list-item><span id="alta_producto_info_span_precio"></span></ons-list-item>
+                                <!-- comienza cantidad pedido -->
                                 <ons-list-item>
                                     <span id="alta_producto_info_span_cantidad">
-                                        <input type="number" id="cantidad_alta_pedido" min="1" max="100">
+                                        <input type="number" id="cantidad_alta_pedido" min="1">
                                         <span id="alta_producto_precio_final"></span>
                                     </span>
                                 </ons-list-item>
-                                <ons-list-item><span id="alta_producto_info_span_sucursales">
-                                        <ons-select id="alta_pedido_seleccionar_sucursal" onchange="editSelects(event)">
-                                            <option value="material">Seleccionar Sucursal</option>
-                                        </ons-select>
-                                    </span></ons-list-item>
+                                <!-- termina cantidad pedido -->
+
+                                <!-- comienza combo sucursales -->
+                                <ons-list-item><span id="alta_producto_info_span_sucursales"></span></ons-list-item>
+                                <!-- termina combo sucursales -->
+
                                 <ons-list-item><span id="alta_producto_info_span_mapa"></span></ons-list-item>
                                 <ons-list-item>
                                     <span id="alta_producto_info_span_precio_final"></span>
