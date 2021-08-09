@@ -543,30 +543,30 @@
                             sessionStorage.setItem("lista_sucursales", JSON.stringify(sucursales.data));
                             lista_sucur = JSON.parse(sessionStorage.getItem("lista_sucursales"));
                             //alert(sucursales.data[0].nombre);
-
-                            text_select = `
-                            <ons-select id="alta_pedido_seleccionar_sucursal" onchange="editSelects(event)">
-                                <option value="">Seleccione Sucursal</option>
-                                <option value="${sucursales.data[0].nombre}">${sucursales.data[0].nombre}</option>
-                                <option value="${sucursales.data[1].nombre}">${sucursales.data[1].nombre}</option>
-                                <option value="${sucursales.data[2].nombre}">${sucursales.data[2].nombre}</option>
-                                <option value="${sucursales.data[3].nombre}">${sucursales.data[3].nombre}</option>
-                                <option value="${sucursales.data[4].nombre}">${sucursales.data[4].nombre}</option>
-                            </ons-select>
-                            `;
-
-                            $("#alta_producto_info_span_sucursales").html(text_select);
-
                             $.each(sucursales.data, function (pos, sucursal_info) {
                                 sucursal_obj = sucursal_info;
                                 nombre_suc = sucursal_info.nombre;
                                 dir_suc = sucursal_info.direccion;
                             });
 
-                            let pedido_sucursal_seleccionada = $('#alta_pedido_seleccionar_sucursal option:selected').val();
+                            text_select = `
+                            <ons-select id="alta_pedido_seleccionar_sucursal" onchange="seleccionar_mapa_suc()">
+                                <option value="">Seleccione Sucursal</option>
+                                <option value="${lista_sucur[0].nombre}">${lista_sucur[0].nombre}</option>
+                                <option value="${lista_sucur[1].nombre}">${lista_sucur[1].nombre}</option>
+                                <option value="${lista_sucur[2].nombre}">${lista_sucur[2].nombre}</option>
+                                <option value="${lista_sucur[3].nombre}">${lista_sucur[3].nombre}</option>
+                                <option value="${lista_sucur[4].nombre}">${lista_sucur[4].nombre}</option>
+                            </ons-select>
+                            `;
 
-                            if (pedido_sucursal_seleccionada === sucursal_obj.nombre) {
-                                mapa_ajax(sucursal_obj);
+                            $("#alta_producto_info_span_sucursales").html(text_select);
+
+                            function seleccionar_mapa_suc() {
+                                let pedido_sucursal_seleccionada = $('#alta_producto_info_span_sucursales option:selected').val();
+                                if (pedido_sucursal_seleccionada === sucursal_obj.nombre) {
+                                    mapa_ajax(sucursal_obj);
+                                }
                             }
 
 
