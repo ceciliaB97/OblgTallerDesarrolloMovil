@@ -491,6 +491,7 @@
                     let nombre_suc = "";
                     let dir_suc = "";
                     let sucursal_obj;
+                    let precio_final;
                     //https://ort-tallermoviles.herokuapp.com/api/productos/1
 
                     $("#spn_txt_cargando").text('Cargando detalles...');
@@ -510,8 +511,13 @@
                                 $("#alta_producto_info_nombre").text(producto_respuesta.nombre);
                                 //https://onsen.io/v2/api/js/ons-icon.html
                                 $("#alta_producto_info_span_precio").html(`<ons-icon icon="fa-dollar-sign"></ons-icon>&nbsp; 1 x ${producto_respuesta.precio}`);
-                                $.each(producto_respuesta.etiquetas, function (pos, producto_etiqueta) {
-                                    $("#alta_producto_info_span_etiquetas").append(`<p>#${producto_respuesta.etiquetas[pos]}</p>`);
+
+                                let precio_uni = sessionStorage.getItem("precioUnitario");
+                                sessionStorage.removeItem("precioUnitario");
+                                $("#cantidad_alta_pedido").on("input", function (precioUnitario) {
+                                    //precio final de pedido
+                                    precio_final = $("#cantidad_alta_pedido").val() * precio_uni;
+                                    $("#alta_producto_precio_final").text(` x ${$("#cantidad_alta_pedido").val() * precio_uni}`);
                                 });
 
                                 if (producto_respuesta.estado != "en stock") {
@@ -525,12 +531,6 @@
                         complete: function () {
                             $("#spn_txt_cargando").text('Cargando sucursales...');
                         }
-                    });
-
-                    let precio_uni = sessionStorage.getItem("precioUnitario");
-                    sessionStorage.removeItem("precioUnitario");
-                    $("#cantidad_alta_pedido").on("input", function (precioUnitario) {
-                        $("#alta_producto_precio_final").text(` x ${$("#cantidad_alta_pedido").val() * precio_uni}`);
                     });
 
                     //sucursales - empieza ajax
@@ -547,20 +547,24 @@
                                 sucursal_obj = sucursal_info;
                                 nombre_suc = sucursal_info.nombre;
                                 dir_suc = sucursal_info.direccion;
+
+
                             });
 
                             text_select = `
                             <ons-select id="alta_pedido_seleccionar_sucursal" onchange="seleccionar_mapa_suc()">
                                 <option value="">Seleccione Sucursal</option>
+                                
+                            </ons-select>
+                            `;
+                            $("#alta_producto_info_span_sucursales").html(text_select);
+                            /*
                                 <option value="${lista_sucur[0].nombre}">${lista_sucur[0].nombre}</option>
                                 <option value="${lista_sucur[1].nombre}">${lista_sucur[1].nombre}</option>
                                 <option value="${lista_sucur[2].nombre}">${lista_sucur[2].nombre}</option>
                                 <option value="${lista_sucur[3].nombre}">${lista_sucur[3].nombre}</option>
                                 <option value="${lista_sucur[4].nombre}">${lista_sucur[4].nombre}</option>
-                            </ons-select>
-                            `;
-
-                            $("#alta_producto_info_span_sucursales").html(text_select);
+                            */
 
                             function seleccionar_mapa_suc() {
                                 let pedido_sucursal_seleccionada = $('#alta_producto_info_span_sucursales option:selected').val();
@@ -627,18 +631,6 @@
                         </div>
                     </ons-card>
                 </article>
-                <ons-speed-dial position="bottom right" direction="up">
-                    <ons-fab>
-                        <ons-icon icon="fa-plus-circle"></ons-icon>
-                    </ons-fab>
-                    <ons-speed-dial-item id="spd_quitar_favorito">
-                        <ons-icon icon="md-block" onclick="eliminar_producto_favorito()">
-                        </ons-icon>
-                    </ons-speed-dial-item>
-                    <ons-speed-dial-item id="spd_agregar_favorito">
-                        <ons-icon icon="fa-star" onclick="agregar_producto_favorito()"></ons-icon>
-                    </ons-speed-dial-item>
-                </ons-speed-dial>
             </section>
 
             <ons-bottom-toolbar>
