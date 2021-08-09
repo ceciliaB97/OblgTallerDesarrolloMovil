@@ -1,4 +1,6 @@
 //#region mapa
+
+/*
 function buildMap(lat, lon, nom_suc, dir_suc) {
     document.getElementById('sucursal_mapa').innerHTML = "<div id='map' style='width: 100%; height: 50%;'></div>";
     var map = L.map('map').setView([lat, lon], 15);
@@ -10,28 +12,62 @@ function buildMap(lat, lon, nom_suc, dir_suc) {
         .bindPopup(`<strong>${nom_suc}</strong><br>${dir_suc}`)
         .openPopup()
 }
+*/
+
+function crear_mapa() {
+    //aqui deben ir coordenadas de dispositivo con icono
+    document.getElementById('sucursal_mapa').innerHTML = "<div id='map' style='width: 100%; height: 50%;'></div>";
+    var map = L.map('map').setView([-34.9035723, -56.1866273], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    //icono personalizado mapa
+    var avatar_icon = L.icon({
+        iconUrl: 'img/icon.png',
+        shadowUrl: 'img/icon.png',
+
+        iconSize: [50, 43], // size of the icon
+        shadowSize: [0, 0], // size of the shadow
+        iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+        shadowAnchor: [0, 0],  // the same for the shadow
+        popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+    });
+
+    L.marker([-34.9035723, -56.1866273], { icon: avatar_icon }).addTo(map);
+
+    return map;
+}
 
 //pedir coordenadas de mapa - ajax
-function mapa_ajax(respuesta_api) {
-    $.ajax({
-        url: `https://nominatim.openstreetmap.org/search?street=${respuesta_api.direccion}&city=${respuesta_api.ciudad}&country=${respuesta_api.pais}&format=json`,
-        type: "GET",
-        dataType: "json",
-        success: function (info_map_sucursales) {
-            $.each(info_map_sucursales, function (pos, info_sucursal_map) {
-                let latitude = info_sucursal_map.lat;
-                let longitude = info_sucursal_map.lon;
-                //alert(info_sucursal_map.lat + " " + info_sucursal_map.lon);
-                //mapa   
-                buildMap(latitude, longitude, respuesta_api.nombre, respuesta_api.direccion);
-            });
-        },
-        error: function (xml, error, status) {
-            ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
-        },
-        complete: function () {
-            $("#cargando").hide();
-        }
+function Agregar_marker_sucursal_a_mapa(respuesta_api) {
+    //crear mapa
+    let mapa_sucursales = crear_mapa();
+    //recorro sucursales
+    $.each(respuesta_api, function (pos, info_sucursal) {
+        //request coordenadas
+        $.ajax({
+            url: `https://nominatim.openstreetmap.org/search?street=${info_sucursal.direccion}&city=${info_sucursal.ciudad}&country=${info_sucursal.pais}&format=json`,
+            type: "GET",
+            dataType: "json",
+            success: function (respuesta_coords) {
+                //ingresar a lista de datos
+                $.each(respuesta_coords, function (pos, respuesta_coords) {
+                    //alert(info_sucursal_map.lat + " " + info_sucursal_map.lon);
+                    //mapa   
+                    L.marker([respuesta_coords.lat, respuesta_coords.lon]).addTo(mapa_sucursales)
+                        .bindPopup(`<strong>${info_sucursal.nombre}</strong><br>${info_sucursal.direccion}`)
+                        .openPopup()
+                });
+
+            },
+            error: function (xml, error, status) {
+                ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+            },
+            complete: function () {
+                $("#cargando").hide();
+            }
+        });
     });
 }
 //#endregion mapa
@@ -388,15 +424,15 @@ $(document).ready(function () {
     });
 
     // Agregar cantidad, alta pedido
-    $(document).on("click", "#agregar_cantidad_btn", function() {
+    $(document).on("click", "#agregar_cantidad_btn", function () {
 
         let number = $("#cantidad_alta_pedido").val();
         let unitPrice = $("#producto_info_span_precio").val();
         let finalPrice = unitPrice * number;
 
         if (number > 0) {
-             $("#producto_info_span_precio_final").push(finalPrice);
-             console.log(finalPrice); // Está entrando al if, el problema es que no esta tomando los valores
+            $("#producto_info_span_precio_final").push(finalPrice);
+            console.log(finalPrice); // Está entrando al if, el problema es que no esta tomando los valores
         }
         else {
             alert("Ingrese un número mayor a 0.")

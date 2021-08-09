@@ -16,3 +16,7 @@ section{
 input[type=number] {
     width: 70px;
 }
+
+select {
+    border: 0px solid white;
+}

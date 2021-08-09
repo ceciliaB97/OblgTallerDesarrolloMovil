@@ -540,42 +540,38 @@
                         type: "GET",
                         dataType: "json",
                         success: function (sucursales) {
-                            sessionStorage.setItem("lista_sucursales", JSON.stringify(sucursales.data));
-                            lista_sucur = JSON.parse(sessionStorage.getItem("lista_sucursales"));
+                            sucursal_obj = sucursales.data;
                             //alert(sucursales.data[0].nombre);
                             text_select = `
-                            
                                 <select class="alta_pedido_seleccionar_sucursal" onchange="seleccionar_mapa_suc()">
                                 <option value="">Seleccione Sucursal</option>
-                                
                             `;
                             $("#alta_producto_info_span_sucursales").html(text_select);
+                            //recore las sucursales
                             $.each(sucursales.data, function (pos, sucursal_info) {
-                                sucursal_obj = sucursal_info;
                                 nombre_suc = sucursal_info.nombre;
                                 dir_suc = sucursal_info.direccion;
-                                //$("#alta_pedido_seleccionar_sucursal").append(`<option value="${nombre_suc}">${nombre_suc}</option>`);
-                                //document.getElementById("alta_producto_info_span_sucursales").innerHTML += `<option value="${nombre_suc}">${nombre_suc}</option>`;
                                 $(".alta_pedido_seleccionar_sucursal").append(`<option value="${nombre_suc}">${nombre_suc}</option>`);
                             });
-                            
                             $(".alta_pedido_seleccionar_sucursal").append(`</select>`);
-                            mapa_ajax(sucursal_obj);
-                            
-                            /*function seleccionar_mapa_suc() {
-                                let pedido_sucursal_seleccionada = $('#alta_producto_info_span_sucursales option:selected').val();
-                                if (pedido_sucursal_seleccionada === sucursal_obj.nombre) {
-                                    mapa_ajax(sucursal_obj);
-                                }
-                            }*/
-
-
+                            //agrega la sucursal al mapa
+                            Agregar_marker_sucursal_a_mapa(sucursal_obj);
                         },
                         error: function (xml, error, status) {
                             ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
                         },
                         complete: function () {
                             $("#cargando").hide();
+                        }
+                    });
+
+                    //boton comprar
+                    $("#alta_finalizar_pedido_btn").on("click", function () {
+                        if ($("#cantidad_alta_pedido").val() == null) {
+                            ons.notification.toast("Debes ingresar una cantidad", { timeout: 4000 });
+                        } else {
+
+                            $("#cantidad_alta_pedido").attr('disabled', true);
                         }
                     });
                     //sucursales - termina ajax
@@ -612,17 +608,15 @@
                                 <!-- comienza combo sucursales -->
                                 <ons-list-item><span id="alta_producto_info_span_sucursales"></span></ons-list-item>
                                 <!-- termina combo sucursales -->
-
-                                <ons-list-item><span id="alta_producto_info_span_mapa"></span></ons-list-item>
-                                <ons-list-item>
-                                    <span id="alta_producto_info_span_precio_final"></span>
-                                </ons-list-item>
+                            </ons-list>
+                            <div id="sucursal_mapa"></div>
+                            <!-- comienza boton finalizar compra -->
+                            <div>
                                 <ons-button id="alta_finalizar_pedido_btn"
                                     onclick="fn.load('temp_listado_productos', 'pag_listado_productos', {data: {codigo: codigo_producto}})"
                                     class="center">Finalizar Compra</ons-button>
-                                </span></ons-list-item>
-                            </ons-list>
-                            <div id="sucursal_mapa"></div>
+                            </div>
+                            <!-- termina boton finalizar compra -->
                         </div>
                         </div>
                     </ons-card>
