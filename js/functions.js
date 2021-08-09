@@ -10,6 +10,30 @@ function buildMap(lat, lon, nom_suc, dir_suc) {
         .bindPopup(`<strong>${nom_suc}</strong><br>${dir_suc}`)
         .openPopup()
 }
+
+//pedir coordenadas de mapa - ajax
+function mapa_ajax(respuesta_api) {
+    $.ajax({
+        url: `https://nominatim.openstreetmap.org/search?street=${respuesta_api.direccion}&city=${respuesta_api.ciudad}&country=${respuesta_api.pais}&format=json`,
+        type: "GET",
+        dataType: "json",
+        success: function (info_map_sucursales) {
+            $.each(info_map_sucursales, function (pos, info_sucursal_map) {
+                let latitude = info_sucursal_map.lat;
+                let longitude = info_sucursal_map.lon;
+                //alert(info_sucursal_map.lat + " " + info_sucursal_map.lon);
+                //mapa   
+                buildMap(latitude, longitude, respuesta_api.nombre, respuesta_api.direccion);
+            });
+        },
+        error: function (xml, error, status) {
+            ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+        },
+        complete: function () {
+            $("#cargando").hide();
+        }
+    });
+}
 //#endregion mapa
 
 //#region fn
