@@ -305,7 +305,7 @@
                                     $("#producto_info_span_etiquetas").append(`<p>#${producto_respuesta.etiquetas[pos]}</p>`);
                                 });
 
-                                $("#producto_info_span_pedido").html(`<ons-button data-codigo="${producto_respuesta.codigo}" id="producto_info_btn_pedido" class="center realizar_pedido_btn">Realizar
+                                $("#producto_info_span_pedido").html(`<ons-button data-codigo="${producto_respuesta.codigo}" data-id="${producto_respuesta._id}" id="producto_info_btn_pedido" class="center realizar_pedido_btn">Realizar
                                             pedido</ons-button>`);
 
 
@@ -423,21 +423,22 @@
                             $.each(respuesta.data, function (pos, pedido_info) {
                                 url = `https://ort-tallermoviles.herokuapp.com/assets/imgs/${pedido_info.producto.urlImagen}.jpg`;
                                 item = `
-                                    <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="listado_productos_listado_class" data-id="${producto_item._id}" data-codigo="${producto_item.codigo}">
+                                    <ons-list-item modifier="chevron longdivider" tappable tap-background-color="#4FFF33" class="listado_productos_listado_class" data-id="${pedido_info.producto._id}" data-codigo="${pedido_info.producto.codigo}">
                                         <div class="list-item__left">
-                                        <img class="list-item__thumbnail" src="https://ort-tallermoviles.herokuapp.com/assets/imgs/${pedido_info.producto.urlImagen}.jpg" alt="producto ${producto_item.nombre}">
+                                        <img class="list-item__thumbnail" src="https://ort-tallermoviles.herokuapp.com/assets/imgs/${pedido_info.producto.urlImagen}.jpg" alt="producto ${pedido_info.producto.nombre}">
                                         </div>
     
                                         <div class="list-item__center">
                                         <div class="list-item__title">${pedido_info.producto.nombre}</div>
                                         <div class="list-item__subtitle">Cantidad ${pedido_info.cantidad}t</div>
-                                        <div class="list-item__subtitle">${pedido_info.producto.total}t</div>
-                                        <div class="list-item__subtitle">${pedido_info.producto.estado}t</div>
+                                        <div class="list-item__subtitle">Precio unitario U$${pedido_info.producto.precio}</div>
+                                        <div class="list-item__subtitle">Precio final U$${pedido_info.total}</div>
+                                        <div class="list-item__subtitle">Estado de pedido ${pedido_info.estado}</div>
                                         </div>
                                         <div class="list-item__center">
                                         <div class="list-item__title">Sucursal</div>
                                         <div class="list-item__subtitle">${pedido_info.sucursal.ciudad}, ${pedido_info.sucursal.nombre}, ${pedido_info.sucursal.direccion}t</div>
-                                        <div class="list-item__subtitle">${pedido_info.comentario}t</div>
+                                        <div class="list-item__subtitle">${pedido_info.comentario}</div>
                                         </div>
                                     </ons-list-item>
                                     `;
@@ -488,6 +489,9 @@
             <script>
                 ons.getScriptPage().onShow = function () {
                     let codigo_producto = this.data.codigo;
+                    let id_producto = this.data.id;
+                    let id_sucursal;
+                    console.log(id_producto);
                     let nombre_suc = "";
                     let dir_suc = "";
                     let sucursal_obj;
@@ -543,7 +547,7 @@
                             sucursal_obj = sucursales.data;
                             //alert(sucursales.data[0].nombre);
                             text_select = `
-                                <select class="alta_pedido_seleccionar_sucursal" onchange="seleccionar_mapa_suc()">
+                                <select class="alta_pedido_seleccionar_sucursal">
                                 <option value="">Seleccione Sucursal</option>
                             `;
                             $("#alta_producto_info_span_sucursales").html(text_select);
@@ -551,6 +555,7 @@
                             $.each(sucursales.data, function (pos, sucursal_info) {
                                 nombre_suc = sucursal_info.nombre;
                                 dir_suc = sucursal_info.direccion;
+                                id_sucursal = sucursal_info._id;
                                 $(".alta_pedido_seleccionar_sucursal").append(`<option value="${nombre_suc}">${nombre_suc}</option>`);
                             });
                             $(".alta_pedido_seleccionar_sucursal").append(`</select>`);
@@ -567,11 +572,42 @@
 
                     //boton comprar
                     $("#alta_finalizar_pedido_btn").on("click", function () {
-                        if ($("#cantidad_alta_pedido").val() == null) {
+                        if ($("#cantidad_alta_pedido").val() === null || $("#cantidad_alta_pedido").val() === 0) {
                             ons.notification.toast("Debes ingresar una cantidad", { timeout: 4000 });
+                        } else if ($(".alta_pedido_seleccionar_sucursal").val() === "") {
+                            ons.notification.toast("Debes seleccionar una sucursal", { timeout: 4000 });
                         } else {
+                            $("#spn_txt_cargando").text('Enviando pedido...');
+                            $("#cargando").show();
+                            let cantidad = $("#cantidad_alta_pedido").val();
 
-                            $("#cantidad_alta_pedido").attr('disabled', true);
+                            let datos = {
+                                "cantidad": cantidad,
+                                "idProducto": id_producto,
+                                "idSucursal": id_sucursal
+                            }
+
+                            datos = JSON.stringify(datos);
+
+                            console.log(datos);
+                            //alta pedido - empieza ajax
+                            ajax_setup();
+                            $.ajax({
+                                url: `https://ort-tallermoviles.herokuapp.com/api/pedidos`,
+                                type: "POST",
+                                dataType: "json",
+                                data: datos,
+                                success: function (sucursales) {
+                                    ons.notification.toast("Pedido ha sido realizado correctamente", { timeout: 4000 });
+                                    fn.load('temp_listado_productos', 'pag_listado_productos');
+                                },
+                                error: function (xml, error, status) {
+                                    ons.notification.toast(xml.responseJSON.description, { timeout: 4000 });
+                                },
+                                complete: function () {
+                                    $("#cargando").hide();
+                                }
+                            });
                         }
                     });
                     //sucursales - termina ajax
@@ -612,9 +648,7 @@
                             <div id="sucursal_mapa"></div>
                             <!-- comienza boton finalizar compra -->
                             <div>
-                                <ons-button id="alta_finalizar_pedido_btn"
-                                    onclick="fn.load('temp_listado_productos', 'pag_listado_productos', {data: {codigo: codigo_producto}})"
-                                    class="center">Finalizar Compra</ons-button>
+                                <ons-button id="alta_finalizar_pedido_btn" class="center">Finalizar Compra</ons-button>
                             </div>
                             <!-- termina boton finalizar compra -->
                         </div>

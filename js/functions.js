@@ -293,8 +293,9 @@ $(document).ready(function () {
     //desde info producto a alta pedido
     $(document).on("click", ".realizar_pedido_btn", function () {
         let codigo_producto = $(this).data("codigo");
+        let id_producto = $(this).data("id");
         //alert(codigo_producto);
-        fn.load('temp_alta_pedido', 'pag_alta_pedido', { data: { codigo: codigo_producto } });
+        fn.load('temp_alta_pedido', 'pag_alta_pedido', { data: { codigo: codigo_producto, id:  id_producto} });
     });
 
     //#region login
