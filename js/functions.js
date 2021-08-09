@@ -392,9 +392,11 @@ $(document).ready(function () {
 
         let number = $("#cantidad_alta_pedido").val();
         let unitPrice = $("#producto_info_span_precio").val();
+        let finalPrice = unitPrice * number;
 
         if (number > 0) {
-             $("#producto_info_span_precio_final").push("Precio final: " + (unitPrice * number));
+             $("#producto_info_span_precio_final").push(finalPrice);
+             console.log(finalPrice); // Está entrando al if, el problema es que no esta tomando los valores
         }
         else {
             alert("Ingrese un número mayor a 0.")
